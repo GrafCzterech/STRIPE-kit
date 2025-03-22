@@ -1,0 +1,22 @@
+[tool.black]
+line-length = 80
+include = '\.pyi?$'
+
+[project]
+name = "name"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools]
+packages = ["project"]
+package-dir = { "" = "src" }
+
+[project.optional-dependencies]
+dev = ["black"]
+test = ["unittest"]
+
+[project.urls]
+Repository = "https://github.com/GrafCzterech/python-template"
