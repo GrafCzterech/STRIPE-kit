@@ -3,15 +3,15 @@ line-length = 80
 include = '\.pyi?$'
 
 [project]
-name = "name"
+name = "neuroforgelab"
 version = "0.1.0"
 description = ""
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = "==3.10.*"
 dependencies = []
 
 [tool.setuptools]
-packages = ["project"]
+packages = ["neuroforgelab"]
 package-dir = { "" = "src" }
 
 [project.optional-dependencies]
@@ -19,4 +19,4 @@ dev = ["black"]
 test = ["unittest"]
 
 [project.urls]
-Repository = "https://github.com/GrafCzterech/python-template"
+Repository = "https://github.com/GrafCzterech/NeuroForgeLab"
