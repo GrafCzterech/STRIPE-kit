@@ -1,54 +1,68 @@
+# isaaclab imports
 from isaaclab.source.isaaclab.isaaclab.scene import InteractiveSceneCfg
 from isaaclab.source.isaaclab.isaaclab.terrains import (
-    SubTerrainBaseCfg,
     TerrainGeneratorCfg,
+    SubTerrainBaseCfg,
 )
-from trimesh import Trimesh
-import numpy as np
-from typing import Callable, TypeAlias
+from isaaclab.source.isaaclab.isaaclab.assets import RigidObjectCfg
+from isaaclab.source.isaaclab.isaaclab.sim.spawners import (
+    UsdFileCfg,
+)
 
-our_gen_func: TypeAlias = Callable[[float], tuple[list[Trimesh], np.ndarray]]
-
-
-class GeneratorFunc:
-    def __init__(self, generate: our_gen_func):
-        self._func = generate
-
-    def __call__(
-        self, difficulty: float, cfg: SubTerrainBaseCfg
-    ) -> tuple[list[Trimesh], np.ndarray]:
-        return self._func(difficulty)
+# our imports
+from .terrain_spec import TerrainSpec
+from .asset_spec import AssetSpec
 
 
-class TerrainSpec:
-    def __init__(self, generate: our_gen_func):
-        self._func = generate
+def new_terrain_generator_cfg(terrain_spec: TerrainSpec) -> TerrainGeneratorCfg:
+    sub_terrain = SubTerrainBaseCfg()
+    sub_terrain.function = terrain_spec.generate
 
-    @property
-    def generate(
-        self,
-    ) -> Callable[[float, SubTerrainBaseCfg], tuple[list[Trimesh], np.ndarray]]:
-        return GeneratorFunc(self._func)
+    terrain = TerrainGeneratorCfg()
+    terrain.sub_terrains["main"] = sub_terrain
+
+    return terrain
 
 
-class AssetSpec:
-    def __init__(self, path: str, asset_class: str):
-        self.path = path
-        self.asset_class = asset_class
+def new_rigid_object_cfg(asset: AssetSpec) -> RigidObjectCfg:
+    obj = RigidObjectCfg()
+    obj.prim_path = "/World/" + asset.name
+
+    spawner = UsdFileCfg()
+    spawner.semantic_tags = [("name", asset.name), ("class", asset.asset_class)]
+    spawner.usd_path = asset.path
+
+    obj.spawn = spawner
+
+    init_state = obj.InitialStateCfg()
+    init_state.pos = asset.pos
+    init_state.rot = asset.rot
+
+    return obj
 
 
 class SceneCfgFactory:
-    def __init__(self):
-        self.terrain_spec: TerrainSpec | None = None
+    def __init__(self, terrain_spec: TerrainSpec):
+        self.terrain_spec: TerrainSpec = terrain_spec
         self.assets: list[AssetSpec] = []
+        self.names = set()
 
     def set_terrain_spec(self, spec: TerrainSpec) -> None:
         self.terrain_spec = spec
 
     def add_asset(self, asset: AssetSpec) -> None:
+        if asset.name in self.names:
+            raise ValueError(f"Asset with name {asset.name} already exists")
         self.assets.append(asset)
+        self.names.add(asset.name)
 
     def new_scene(self) -> InteractiveSceneCfg:
+
         cfg = InteractiveSceneCfg()
-        # TODO actually do the thing
+
+        cfg.__setattr__("terrain", new_terrain_generator_cfg(self.terrain_spec))
+
+        for asset in self.assets:
+            cfg.__setattr__(asset.name, new_rigid_object_cfg(asset))
+
         return cfg
