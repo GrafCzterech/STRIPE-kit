@@ -1,5 +1,12 @@
+from .terrain import TerrainInstance
+from .scene_spec import SceneSpec
 from .factory import SceneCfgFactory
-from .terrain_spec import TerrainSpec
-from .asset_spec import AssetSpec
+from .asset import AssetSpec, AssetInstance
 
-__all__ = ["SceneCfgFactory", "TerrainSpec", "AssetSpec"]
+__all__ = [
+    "SceneCfgFactory",
+    "AssetSpec",
+    "TerrainInstance",
+    "AssetInstance",
+    "SceneSpec",
+]

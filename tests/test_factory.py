@@ -16,27 +16,18 @@ class TestFactory(unittest.TestCase):
 
     def test_factory(self):
         from isaaclab.source.isaaclab.isaaclab.scene import InteractiveScene
-        from neuroforgelab import SceneCfgFactory, TerrainSpec, AssetSpec
+        from neuroforgelab import SceneCfgFactory, TerrainInstance
 
-        def generate_terrain(
-            diff: float, size: tuple[float, float]
-        ) -> tuple[list[Trimesh], np.ndarray]:
-            # generate a flat plane
-            width, height = size
-            vertices = [
-                [0, 0, 0],
-                [0, height, 0],
-                [width, height, 0],
-                [width, 0, 0],
-            ]
-            faces = [
-                [0, 1, 2],
-                [0, 2, 3],
-            ]
-            mesh = Trimesh(vertices=vertices, faces=faces)
-            return [mesh], np.array(vertices)
+        terrain = TerrainInstance(
+            mesh=[
+                Trimesh(
+                    vertices=np.array([[0, 0, 0]]), faces=np.array([[0, 0, 0]])
+                )
+            ],
+            origin=np.array([0, 0, 0]),
+            size=(1, 1),
+        )
 
-        terrain = TerrainSpec(generate_terrain, (1, 1))
         factory = SceneCfgFactory(terrain)
         cfg = factory.new_scene()
         scene = InteractiveScene(cfg)
