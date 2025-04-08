@@ -19,7 +19,7 @@ class SceneCfgFactory:
             terrain (TerrainInstance): The terrain to use
         """
         self.terrain = terrain
-        self.assets: list[AssetInstance] = []
+        self.assets: list[AssetInstance]
         self.names = set()
         self.name = name
 
