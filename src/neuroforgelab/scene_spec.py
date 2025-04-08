@@ -11,8 +11,8 @@ class SceneSpec(ABC):
     """A specification for a scene to be generated"""
 
     size: tuple[float, float]
-    palette: list[tuple[AssetSpec, int]] = []
-    static: list[AssetInstance] = []
+    palette: list[tuple[AssetSpec, int]]
+    static: list[AssetInstance]
 
     def add_asset(self, asset: AssetSpec, count: int = 1):
         """Add an asset to the scene palette
