@@ -29,7 +29,7 @@ class SceneCfgFactory:
         Args:
             spec (TerrainInstance): The TerrainInstance object to use
         """
-        self.terrain_spec = spec
+        self.terrain = spec
 
     def add_asset(self, asset: AssetInstance) -> None:
         """Add an AssetInstance object to the factory
@@ -54,7 +54,7 @@ class SceneCfgFactory:
 
         cfg = InteractiveSceneCfg()
 
-        cfg.__setattr__("terrain", self.terrain_spec.to_terrain_generator_cfg())
+        cfg.__setattr__("terrain", self.terrain.to_terrain_generator_cfg())
 
         for asset in self.assets:
             cfg.__setattr__(asset.name, asset.to_rigid_object_cfg(self.name))
