@@ -33,7 +33,7 @@ class TerrainInstance:
         sub_terrain.size = self.size
 
         terrain_cfg = TerrainGeneratorCfg()
-        terrain_cfg.sub_terrains["main"] = sub_terrain
+        terrain_cfg.sub_terrains = {"main":sub_terrain}
         terrain_cfg.size = self.size
 
         return terrain_cfg
