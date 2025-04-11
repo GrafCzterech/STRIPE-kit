@@ -54,9 +54,12 @@ class SceneCfgFactory:
 
         cfg = InteractiveSceneCfg()
 
-        cfg.__setattr__("terrain", self.terrain.to_terrain_generator_cfg())
+        setattr(cfg, "terrain", self.terrain.to_terrain_generator_cfg())
 
         for asset in self.assets:
-            cfg.__setattr__(asset.name, asset.to_rigid_object_cfg(self.name))
+            setattr(cfg, asset.name, asset.to_rigid_object_cfg(self.name))
+
+        setattr(cfg, "num_envs", 1)
+        setattr(cfg, "env_spacing", 0.0)
 
         return cfg
