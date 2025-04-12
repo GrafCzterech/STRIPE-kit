@@ -1,5 +1,6 @@
 # isaaclab imports
 from isaaclab.source.isaaclab.isaaclab.scene import InteractiveSceneCfg
+from isaaclab.source.isaaclab.isaaclab.terrains import TerrainGenerator
 
 from .asset import AssetInstance
 from .terrain import TerrainInstance
@@ -54,7 +55,11 @@ class SceneCfgFactory:
 
         cfg = InteractiveSceneCfg()
 
-        setattr(cfg, "terrain", self.terrain.to_terrain_generator_cfg())
+        setattr(
+            cfg,
+            "terrain",
+            TerrainGenerator(self.terrain.to_terrain_generator_cfg()),
+        )
 
         for asset in self.assets:
             setattr(cfg, asset.name, asset.to_rigid_object_cfg(self.name))
