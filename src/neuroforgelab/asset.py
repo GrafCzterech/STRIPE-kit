@@ -1,7 +1,5 @@
-from isaaclab.source.isaaclab.isaaclab.assets import RigidObjectCfg
-from isaaclab.source.isaaclab.isaaclab.sim.spawners import (
-    UsdFileCfg,
-)
+from isaaclab.assets import RigidObjectCfg
+from isaaclab.sim.spawners import UsdFileCfg
 
 from dataclasses import dataclass
 from abc import abstractmethod, ABC

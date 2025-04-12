@@ -1,9 +1,11 @@
 # isaaclab imports
-from isaaclab.source.isaaclab.isaaclab.scene import InteractiveSceneCfg
-from isaaclab.source.isaaclab.isaaclab.terrains import TerrainGenerator
+from isaaclab.scene import InteractiveSceneCfg
+from isaaclab.terrains import TerrainImporterCfg
 
 from .asset import AssetInstance
 from .terrain import TerrainInstance
+
+TERRAIN_NAME = "terrain"
 
 
 class SceneCfgFactory:
@@ -53,13 +55,14 @@ class SceneCfgFactory:
             InteractiveSceneCfg: The InteractiveSceneCfg object
         """
 
+        # this is ever so slightly more performant, that creating a new dynamic class(an object) then an instance of that class (yet another object)
         cfg = InteractiveSceneCfg()
 
-        setattr(
-            cfg,
-            "terrain",
-            TerrainGenerator(self.terrain.to_terrain_generator_cfg()),
-        )
+        importer = TerrainImporterCfg()
+        importer.prim_path = f"/{self.name}/{TERRAIN_NAME}"
+        importer.terrain_type = "generator"
+        importer.terrain_generator = self.terrain.to_terrain_generator_cfg()
+        setattr(cfg, TERRAIN_NAME, importer)
 
         for asset in self.assets:
             setattr(cfg, asset.name, asset.to_rigid_object_cfg(self.name))
