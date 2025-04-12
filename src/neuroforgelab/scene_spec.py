@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from abc import abstractmethod, ABC
 
-from .asset import AssetSpec, AssetInstance
+from .asset import AssetSpec, LightSpec
 from .terrain import TerrainInstance
 from .factory import SceneCfgFactory
 
@@ -12,7 +12,8 @@ class SceneSpec(ABC):
 
     size: tuple[float, float]
     palette: list[tuple[AssetSpec, int]]
-    static: list[AssetInstance]
+    light: LightSpec = LightSpec()
+    # TODO include a robot def
 
     def add_asset(self, asset: AssetSpec, count: int = 1):
         """Add an asset to the scene palette
@@ -41,12 +42,13 @@ class SceneSpec(ABC):
         terrain = self.generate()
         factory = SceneCfgFactory(terrain)
         for asset, count in self.palette:
-            pos = asset.find_positions(terrain)
-            for i in range(count):
-                position = pos[i % len(pos)]
+            positions = asset.find_positions(terrain)
+            for i in range(min(count, len(positions))):
+                position = positions[i % len(positions)]
                 factory.add_asset(
                     asset.create_instance(
                         f"{asset.name}_{i}", position, (0, 0, 0, 1)
                     )
                 )
+        factory.add_asset(self.light)
         return factory

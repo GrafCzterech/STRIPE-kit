@@ -2,7 +2,7 @@
 from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.terrains import TerrainImporterCfg
 
-from .asset import AssetInstance
+from .asset import SceneAsset
 from .terrain import TerrainInstance
 
 TERRAIN_NAME = "terrain"
@@ -22,7 +22,7 @@ class SceneCfgFactory:
             terrain (TerrainInstance): The terrain to use
         """
         self.terrain = terrain
-        self.assets: list[AssetInstance] = []
+        self.assets: list[SceneAsset] = []
         self.names = set()
         self.name = name
 
@@ -34,7 +34,7 @@ class SceneCfgFactory:
         """
         self.terrain = spec
 
-    def add_asset(self, asset: AssetInstance) -> None:
+    def add_asset(self, asset: SceneAsset) -> None:
         """Add an AssetInstance object to the factory
 
         Args:
@@ -43,10 +43,12 @@ class SceneCfgFactory:
         Raises:
             ValueError: If an asset with the same name already exists
         """
-        if asset.name in self.names:
-            raise ValueError(f"Asset with name {asset.name} already exists")
+        if asset.get_name() in self.names:
+            raise ValueError(
+                f"Asset with name {asset.get_name()} already exists"
+            )
         self.assets.append(asset)
-        self.names.add(asset.name)
+        self.names.add(asset.get_name())
 
     def new_scene(self) -> InteractiveSceneCfg:
         """Create a new InteractiveSceneCfg object from the TerrainSpec and AssetSpec objects
@@ -65,7 +67,7 @@ class SceneCfgFactory:
         setattr(cfg, TERRAIN_NAME, importer)
 
         for asset in self.assets:
-            setattr(cfg, asset.name, asset.to_rigid_object_cfg(self.name))
+            setattr(cfg, asset.get_name(), asset.to_cfg(self.name))
 
         setattr(cfg, "num_envs", 1)
         setattr(cfg, "env_spacing", 0.0)
