@@ -13,22 +13,27 @@ class SceneSpec(ABC):
     """A specification for a scene to be generated"""
 
     size: tuple[float, float]
-    palette: list[tuple[AssetSpec, int]]
+    palette: list[AssetSpec]
     robot: AssetBaseCfg
     light: LightSpec = LightSpec()
 
-    def add_asset(self, asset: AssetSpec, count: int = 1):
+    def add_asset(self, asset: AssetSpec):
         """Add an asset to the scene palette
 
         Args:
             asset (AssetSpec): The asset to add
-            count (int, optional): The number of instances of the asset to add. Defaults to 1.
         """
-        self.palette.append((asset, count))
+        self.palette.append(asset)
 
     @abstractmethod
     def generate(self) -> TerrainInstance:
-        """Generate a terrain instance
+        """Generate a terrain instance. This method is used to generate the
+        terrain for the scene.
+
+        While implementing this method, you can store extra data in the
+        returned object, that then can be used by the asset specifications, thus
+        allowing for more performant scene generation, where interesting spots
+        encountered during terrain generation can be used to place assets.
 
         Returns:
             TerrainInstance: The generated terrain instance
@@ -36,21 +41,20 @@ class SceneSpec(ABC):
         ...
 
     def create_instance(self) -> SceneCfgFactory:
-        """Create a SceneCfgFactory object from the SceneSpec object
+        """Create a SceneCfgFactory object from the SceneSpec object.
+
+        The default implementation, generates the terrain using the generate
+        method, and then generates the assets using the asset specifications
+        in the palette. The generated scene is then returned.
 
         Returns:
             SceneCfgFactory: The SceneCfgFactory object
         """
         terrain = self.generate()
         factory = SceneCfgFactory(terrain, self.robot)
-        for asset, count in self.palette:
-            positions = asset.find_positions(terrain)
-            for i in range(min(count, len(positions))):
-                position = positions[i % len(positions)]
-                factory.add_asset(
-                    asset.create_instance(
-                        f"{asset.name}_{i}", position, (0, 0, 0, 1)
-                    )
-                )
+        for asset in self.palette:
+            children = asset.generate(terrain)
+            for child in children:
+                factory.add_asset(child)
         factory.add_asset(self.light)
         return factory
