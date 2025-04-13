@@ -123,7 +123,6 @@ class AssetInstance(SceneAsset):
 @dataclass
 class LightSpec(SceneAsset):
 
-    radius: float = 0.5
     exposure: float = 0.0
     intensity: float = 1.0
     color: tuple[float, float, float] = (1.0, 1.0, 1.0)
@@ -131,13 +130,13 @@ class LightSpec(SceneAsset):
     def to_cfg(self, scene_name: str = "World") -> AssetBaseCfg:
 
         light_cfg = DistantLightCfg()
-        light_cfg.radius = self.radius
         light_cfg.exposure = self.exposure
         light_cfg.intensity = self.intensity
         light_cfg.color = self.color
 
-        state = light_cfg.InitialStateCfg()
+        state = AssetBaseCfg.InitialStateCfg()
         state.pos = (0, 0, 0)
+        state.rot = (0, 0, 0, 1)
 
         cfg = AssetBaseCfg()
         cfg.prim_path = f"/{scene_name}/{self.get_name()}"
