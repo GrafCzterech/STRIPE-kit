@@ -50,6 +50,7 @@ class AssetSpec(ABC):
         usd_path: str,
         position: tuple[float, float, float],
         rotation: tuple[float, float, float, float],
+        tags: dict[str, str] | None = None,
     ) -> "AssetInstance":
         """Create an AssetInstance object from an AssetSpec object
 
@@ -62,7 +63,9 @@ class AssetSpec(ABC):
         Returns:
             AssetInstance: The AssetInstance object
         """
-        return AssetInstance(self, usd_path, name, position, rotation)
+        if tags is None:
+            tags = {}
+        return AssetInstance(self, usd_path, name, position, rotation, tags)
 
 
 class IdenticalAssetSpec(AssetSpec):
@@ -105,6 +108,7 @@ class IdenticalAssetSpec(AssetSpec):
         name: str,
         position: tuple[float, float, float],
         rotation: tuple[float, float, float, float],
+        tags: dict[str, str] | None = None,
     ) -> "AssetInstance":
         """Create an AssetInstance object from an AssetSpec object
 
@@ -116,7 +120,9 @@ class IdenticalAssetSpec(AssetSpec):
         Returns:
             AssetInstance: The AssetInstance object
         """
-        return super().create_instance(name, self.usd_path, position, rotation)
+        return super().create_instance(
+            name, self.usd_path, position, rotation, tags
+        )
 
 
 class SceneAsset(ABC):
@@ -153,6 +159,7 @@ class AssetInstance(SceneAsset):
     name: str
     position: tuple[float, float, float]
     rotation: tuple[float, float, float, float]
+    additional_tags: dict[str, str]
 
     def to_cfg(self, scene_name: str = "World") -> AssetBaseCfg:
         """Create a RigidObjectCfg object from an AssetInstance object
@@ -172,6 +179,8 @@ class AssetInstance(SceneAsset):
             ("name", self.name),
             ("class", self.asset_class.name),
         ]
+        for key, value in self.additional_tags.items():
+            spawner.semantic_tags.append((key, value))
         spawner.usd_path = self.path
 
         obj.spawn = spawner
