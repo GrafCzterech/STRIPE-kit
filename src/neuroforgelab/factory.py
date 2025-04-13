@@ -1,6 +1,7 @@
 # isaaclab imports
 from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.terrains import TerrainImporterCfg
+from isaaclab.assets import AssetBaseCfg
 
 from .asset import SceneAsset
 from .terrain import TerrainInstance
@@ -14,6 +15,7 @@ class SceneCfgFactory:
     def __init__(
         self,
         terrain: TerrainInstance,
+        robot: AssetBaseCfg,
         name: str = "World",
     ):
         """Create a new SceneCfgFactory object
@@ -25,6 +27,7 @@ class SceneCfgFactory:
         self.assets: list[SceneAsset] = []
         self.names = set()
         self.name = name
+        self.robot = robot
 
     def set_terrain_spec(self, spec: TerrainInstance) -> None:
         """Set the TerrainInstance object to use
@@ -68,6 +71,8 @@ class SceneCfgFactory:
 
         for asset in self.assets:
             setattr(cfg, asset.get_name(), asset.to_cfg(self.name))
+
+        setattr(cfg, "robot", self.robot)
 
         setattr(cfg, "num_envs", 1)
         setattr(cfg, "env_spacing", 0.0)

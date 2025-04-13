@@ -5,6 +5,8 @@ from .asset import AssetSpec, LightSpec
 from .terrain import TerrainInstance
 from .factory import SceneCfgFactory
 
+from isaaclab.assets import AssetBaseCfg
+
 
 @dataclass
 class SceneSpec(ABC):
@@ -12,8 +14,8 @@ class SceneSpec(ABC):
 
     size: tuple[float, float]
     palette: list[tuple[AssetSpec, int]]
+    robot: AssetBaseCfg
     light: LightSpec = LightSpec()
-    # TODO include a robot def
 
     def add_asset(self, asset: AssetSpec, count: int = 1):
         """Add an asset to the scene palette
@@ -40,7 +42,7 @@ class SceneSpec(ABC):
             SceneCfgFactory: The SceneCfgFactory object
         """
         terrain = self.generate()
-        factory = SceneCfgFactory(terrain)
+        factory = SceneCfgFactory(terrain, self.robot)
         for asset, count in self.palette:
             positions = asset.find_positions(terrain)
             for i in range(min(count, len(positions))):
