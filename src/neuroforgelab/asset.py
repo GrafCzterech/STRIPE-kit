@@ -16,20 +16,6 @@ class AssetSpec(ABC):
     name: str
 
     @abstractmethod
-    def find_positions(
-        self, terrain: TerrainInstance
-    ) -> list[tuple[float, float, float]]:
-        """Find positions to place the asset on the terrain
-
-        Args:
-            terrain (TerrainInstance): The terrain to place the asset on
-
-        Returns:
-            list[tuple[float, float, float]]: A list of positions to place the asset on the terrain
-        """
-        ...
-
-    @abstractmethod
     def generate(
         self,
         terrain: TerrainInstance,
@@ -84,6 +70,20 @@ class IdenticalAssetSpec(AssetSpec):
         """
         super().__init__(name)
         self.usd_path = usd_path
+
+    @abstractmethod
+    def find_positions(
+        self, terrain: TerrainInstance
+    ) -> list[tuple[float, float, float]]:
+        """Find positions to place the asset on the terrain
+
+        Args:
+            terrain (TerrainInstance): The terrain to place the asset on
+
+        Returns:
+            list[tuple[float, float, float]]: A list of positions to place the asset on the terrain
+        """
+        ...
 
     def generate(self, terrain: TerrainInstance) -> list["AssetInstance"]:
         """Generate instances of the asset to be placed on the terrain
