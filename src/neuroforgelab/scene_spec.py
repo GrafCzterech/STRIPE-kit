@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from abc import abstractmethod, ABC
+import logging
 
 from .asset import AssetSpec, LightSpec
 from .terrain import TerrainInstance
@@ -50,11 +51,14 @@ class SceneSpec(ABC):
         Returns:
             SceneCfgFactory: The SceneCfgFactory object
         """
+        logging.debug("Generating terrain")
         terrain = self.generate()
         factory = SceneCfgFactory(terrain, self.robot)
         for asset in self.palette:
+            logging.debug(f"Generating asset {asset.name}")
             children = asset.generate(terrain)
             for child in children:
                 factory.add_asset(child)
+        logging.debug("Adding light")
         factory.add_asset(self.light)
         return factory

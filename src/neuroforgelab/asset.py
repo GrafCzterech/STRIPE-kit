@@ -1,11 +1,62 @@
-from isaaclab.assets import RigidObjectCfg, AssetBaseCfg
-from isaaclab.sim.spawners import UsdFileCfg
-from isaaclab.sim.spawners.lights import DistantLightCfg
-
 from dataclasses import dataclass
 from abc import abstractmethod, ABC
+import logging
+
+from isaaclab.assets import RigidObjectCfg, AssetBaseCfg
+from isaaclab.sim.spawners import UsdFileCfg, SpawnerCfg
+from isaaclab.sim.spawners.lights import DistantLightCfg
+from isaaclab.sim.converters import MeshConverterCfg, MeshConverter
 
 from .terrain import TerrainInstance
+
+
+class AssetMesh(ABC):
+    """A mesh asset that can be converted to a USD file"""
+
+    @abstractmethod
+    def to_cfg(self) -> SpawnerCfg:
+        """Create a SpawnerCfg object from an AssetMesh object
+
+        Returns:
+            SpawnerCfg: The IsaacLab cfg object
+        """
+        ...
+
+
+@dataclass
+class USDMesh(AssetMesh):
+
+    usd_path: str
+
+    def to_cfg(self) -> UsdFileCfg:
+        """Create a MeshConverterCfg object from an AssetMesh object
+
+        Returns:
+            UsdFileCfg: The IsaacLab cfg object
+        """
+        logging.debug("Creating USD mesh cfg")
+        mesh_cfg = UsdFileCfg()
+        mesh_cfg.usd_path = self.usd_path
+        return mesh_cfg
+
+
+class UniversalMesh(AssetMesh):
+
+    def __init__(self, path: str, **kwargs):
+        logging.debug("Creating universal mesh")
+        cfg = MeshConverterCfg(path, **kwargs)
+        self.converter = MeshConverter(cfg)
+
+    def to_cfg(self) -> SpawnerCfg:
+        """Create a MeshConverterCfg object from an AssetMesh object
+
+        Returns:
+            SpawnerCfg: The IsaacLab cfg object
+        """
+        logging.debug("Creating universal mesh cfg")
+        mesh_cfg = UsdFileCfg()
+        mesh_cfg.usd_path = self.converter.usd_path
+        return mesh_cfg
 
 
 @dataclass
@@ -33,7 +84,7 @@ class AssetSpec(ABC):
     def create_instance(
         self,
         name: str,
-        usd_path: str,
+        asset: AssetMesh,
         position: tuple[float, float, float],
         rotation: tuple[float, float, float, float],
         tags: dict[str, str] | None = None,
@@ -42,16 +93,17 @@ class AssetSpec(ABC):
 
         Args:
             name (str): The name of the asset instance
-            usd_path (str): The path to the USD file of the asset
+            asset (AssetMesh): The mesh of the asset instance
             position (tuple[float, float, float]): The position of the asset instance
             rotation (tuple[float, float, float, float]): The rotation of the asset instance
+            tags (dict[str, str], optional): Additional tags to add to the asset instance. Defaults to None.
 
         Returns:
             AssetInstance: The AssetInstance object
         """
         if tags is None:
             tags = {}
-        return AssetInstance(self, usd_path, name, position, rotation, tags)
+        return AssetInstance(self, asset, name, position, rotation, tags)
 
 
 class IdenticalAssetSpec(AssetSpec):
@@ -61,15 +113,15 @@ class IdenticalAssetSpec(AssetSpec):
     the generation step, and only requires the asset to be loaded once.
     """
 
-    def __init__(self, name: str, usd_path: str):
+    def __init__(self, name: str, mesh: AssetMesh):
         """Create a new IdenticalAssetSpec object
 
         Args:
             name (str): The name of the asset
-            usd_path (str): The path to the USD file of the asset
+            mesh (AssetMesh): The mesh of the asset
         """
         super().__init__(name)
-        self.usd_path = usd_path
+        self.mesh = mesh
 
     @abstractmethod
     def find_positions(
@@ -121,7 +173,7 @@ class IdenticalAssetSpec(AssetSpec):
             AssetInstance: The AssetInstance object
         """
         return super().create_instance(
-            name, self.usd_path, position, rotation, tags
+            name, self.mesh, position, rotation, tags
         )
 
 
@@ -155,7 +207,7 @@ class AssetInstance(SceneAsset):
     """A specification for an asset to be placed in a scene"""
 
     asset_class: AssetSpec
-    path: str
+    mesh: AssetMesh
     name: str
     position: tuple[float, float, float]
     rotation: tuple[float, float, float, float]
@@ -170,18 +222,19 @@ class AssetInstance(SceneAsset):
         Returns:
             AssetBaseCfg: The IsaacLab cfg object
         """
+        logging.debug("Creating asset cfg")
         obj = RigidObjectCfg()
 
         obj.prim_path = f"/{scene_name}/{self.name}"
 
-        spawner = UsdFileCfg()
-        spawner.semantic_tags = [
-            ("name", self.name),
-            ("class", self.asset_class.name),
-        ]
-        for key, value in self.additional_tags.items():
-            spawner.semantic_tags.append((key, value))
-        spawner.usd_path = self.path
+        spawner = self.mesh.to_cfg()
+
+        if spawner.semantic_tags is None:
+            spawner.semantic_tags = []
+
+        spawner.semantic_tags.append(("name", self.name))
+        spawner.semantic_tags.append(("class", self.asset_class.name))
+        spawner.semantic_tags.extend(self.additional_tags.items())
 
         obj.spawn = spawner
 
@@ -208,6 +261,8 @@ class LightSpec(SceneAsset):
     color: tuple[float, float, float] = (1.0, 1.0, 1.0)
 
     def to_cfg(self, scene_name: str = "World") -> AssetBaseCfg:
+
+        logging.debug("Creating light cfg")
 
         light_cfg = DistantLightCfg()
         light_cfg.exposure = self.exposure

@@ -1,7 +1,14 @@
 from .terrain import TerrainInstance
 from .scene_spec import SceneSpec
 from .factory import SceneCfgFactory
-from .asset import AssetSpec, AssetInstance, IdenticalAssetSpec
+from .asset import (
+    AssetSpec,
+    AssetInstance,
+    IdenticalAssetSpec,
+    AssetMesh,
+    USDMesh,
+    UniversalMesh,
+)
 
 __all__ = [
     "SceneCfgFactory",
@@ -10,4 +17,7 @@ __all__ = [
     "TerrainInstance",
     "AssetInstance",
     "SceneSpec",
+    "AssetMesh",
+    "USDMesh",
+    "UniversalMesh",
 ]

@@ -1,10 +1,11 @@
+from dataclasses import dataclass
+from typing import Callable, TypeAlias
+import logging
+
 from isaaclab.terrains import SubTerrainBaseCfg, TerrainGeneratorCfg
 
 from trimesh import Trimesh
 import numpy as np
-
-from dataclasses import dataclass
-from typing import Callable, TypeAlias
 
 TerrainGenFunc: TypeAlias = Callable[
     [float, SubTerrainBaseCfg],
@@ -30,6 +31,7 @@ class TerrainInstance:
         Returns:
             TerrainGeneratorCfg: The TerrainGeneratorCfg object
         """
+        logging.debug("Creating terrain generator cfg")
         sub_terrain = SubTerrainBaseCfg()
         sub_terrain.function = lambda diff, cfg: (
             [self.mesh],

@@ -1,3 +1,5 @@
+import logging
+
 # isaaclab imports
 from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.terrains import TerrainImporterCfg
@@ -52,6 +54,7 @@ class SceneCfgFactory:
             )
         self.assets.append(asset)
         self.names.add(asset.get_name())
+        logging.debug(f"Added asset {asset.get_name()}")
 
     def new_scene(self) -> InteractiveSceneCfg:
         """Create a new InteractiveSceneCfg object from the TerrainSpec and AssetSpec objects
@@ -59,6 +62,7 @@ class SceneCfgFactory:
         Returns:
             InteractiveSceneCfg: The InteractiveSceneCfg object
         """
+        logging.debug("Creating scene cfg")
 
         # this is ever so slightly more performant, that creating a new dynamic class(an object) then an instance of that class (yet another object)
         cfg = InteractiveSceneCfg()
