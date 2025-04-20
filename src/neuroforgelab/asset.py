@@ -53,7 +53,6 @@ class UniversalMesh(AssetMesh):
         Returns:
             SpawnerCfg: The IsaacLab cfg object
         """
-        logging.debug("Creating universal mesh cfg")
         mesh_cfg = UsdFileCfg()
         mesh_cfg.usd_path = self.converter.usd_path
         return mesh_cfg
@@ -222,7 +221,6 @@ class AssetInstance(SceneAsset):
         Returns:
             AssetBaseCfg: The IsaacLab cfg object
         """
-        logging.debug("Creating asset cfg")
         obj = RigidObjectCfg()
 
         obj.prim_path = f"/{scene_name}/{self.name}"
