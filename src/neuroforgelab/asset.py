@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from abc import abstractmethod, ABC
 import logging
 
+from pxr import UsdPhysics
+import isaacsim.core.utils.prims as prims_utils
 from isaaclab.assets import RigidObjectCfg, AssetBaseCfg
 from isaaclab.sim.spawners import UsdFileCfg, SpawnerCfg
 from isaaclab.sim.spawners.lights import DistantLightCfg
@@ -221,9 +223,15 @@ class AssetInstance(SceneAsset):
         Returns:
             AssetBaseCfg: The IsaacLab cfg object
         """
-        obj = RigidObjectCfg()
+        prim_path = f"/{scene_name}/{self.name}"
+        prim = prims_utils.create_prim(prim_path=prim_path)
+        if not prim.HasAPI(UsdPhysics.RigidBodyAPI):
+            UsdPhysics.RigidBodyAPI.Apply(prim)
 
-        obj.prim_path = f"/{scene_name}/{self.name}"
+        obj = RigidObjectCfg(
+            prim_path = prim_path,
+            collision_group = -1
+        )  # TODO - poprawić sposób ładowania assetów
 
         spawner = self.mesh.to_cfg()
 
