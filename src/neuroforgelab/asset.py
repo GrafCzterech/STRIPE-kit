@@ -2,6 +2,9 @@ from dataclasses import dataclass
 from abc import abstractmethod, ABC
 import logging
 
+from pxr import UsdPhysics, UsdGeom, Gf
+import isaacsim.core.utils.prims as prims_utils
+import omni.usd
 from isaaclab.assets import RigidObjectCfg, AssetBaseCfg
 from isaaclab.sim.spawners import UsdFileCfg, SpawnerCfg
 from isaaclab.sim.spawners.lights import DistantLightCfg
@@ -84,6 +87,7 @@ class AssetSpec(ABC):
         self,
         name: str,
         asset: AssetMesh,
+        usd_path: str,
         position: tuple[float, float, float],
         rotation: tuple[float, float, float, float],
         tags: dict[str, str] | None = None,
@@ -93,6 +97,7 @@ class AssetSpec(ABC):
         Args:
             name (str): The name of the asset instance
             asset (AssetMesh): The mesh of the asset instance
+            usd_path: Path to an USD file, from which the asset mesh originates
             position (tuple[float, float, float]): The position of the asset instance
             rotation (tuple[float, float, float, float]): The rotation of the asset instance
             tags (dict[str, str], optional): Additional tags to add to the asset instance. Defaults to None.
@@ -102,7 +107,7 @@ class AssetSpec(ABC):
         """
         if tags is None:
             tags = {}
-        return AssetInstance(self, asset, name, position, rotation, tags)
+        return AssetInstance(self, asset, usd_path, name, position, rotation, tags)
 
 
 class IdenticalAssetSpec(AssetSpec):
@@ -111,6 +116,8 @@ class IdenticalAssetSpec(AssetSpec):
     street lamp, and you want to place it in multiple locations. This simplifies
     the generation step, and only requires the asset to be loaded once.
     """
+
+    usd_path: str
 
     def __init__(self, name: str, mesh: AssetMesh):
         """Create a new IdenticalAssetSpec object
@@ -172,7 +179,7 @@ class IdenticalAssetSpec(AssetSpec):
             AssetInstance: The AssetInstance object
         """
         return super().create_instance(
-            name, self.mesh, position, rotation, tags
+            name, self.mesh, self.usd_path, position, rotation, tags
         )
 
 
@@ -207,6 +214,7 @@ class AssetInstance(SceneAsset):
 
     asset_class: AssetSpec
     mesh: AssetMesh
+    usd_path: str
     name: str
     position: tuple[float, float, float]
     rotation: tuple[float, float, float, float]
@@ -221,9 +229,38 @@ class AssetInstance(SceneAsset):
         Returns:
             AssetBaseCfg: The IsaacLab cfg object
         """
-        obj = RigidObjectCfg()
+        prim_path = f"/{scene_name}/{self.name}"
+        stage = omni.usd.get_context().get_stage()
 
-        obj.prim_path = f"/{scene_name}/{self.name}"
+        prim = prims_utils.create_prim(
+            prim_path=prim_path,
+            usd_path=self.usd_path)
+
+        if not prim.HasAPI(UsdPhysics.RigidBodyAPI):
+            UsdPhysics.RigidBodyAPI.Apply(prim)
+
+        if not prim.HasAPI(UsdPhysics.MassAPI):
+            UsdPhysics.MassAPI.Apply(prim)
+
+        collider_prim_path = prim_path + "/Collider"
+        collider = UsdGeom.Cube.Define(stage, collider_prim_path)
+        collider.CreateSizeAttr(1.0)
+        UsdPhysics.CollisionAPI.Apply(collider.GetPrim())
+
+        collision_api = UsdPhysics.CollisionAPI.Get(stage, collider_prim_path)
+        collision_api.CreateCollisionEnabledAttr(True)
+        mass_api = UsdPhysics.MassAPI.Get(stage, prim_path)
+        mass_api.CreateMassAttr(500.0)
+
+        xform = UsdGeom.Xformable(collider)
+        xform_ops = xform.AddTranslateOp()
+        xform_ops.Set((0.0, 0.0, 0.0))
+
+        prim.GetAttribute("xformOp:scale").Set(Gf.Vec3f(0.01, 0.01, 0.01))
+
+        obj = RigidObjectCfg(
+            prim_path = prim_path
+        )
 
         spawner = self.mesh.to_cfg()
 
@@ -234,7 +271,7 @@ class AssetInstance(SceneAsset):
         spawner.semantic_tags.append(("class", self.asset_class.name))
         spawner.semantic_tags.extend(self.additional_tags.items())
 
-        obj.spawn = spawner
+        # obj.spawn = spawner
 
         init_state = obj.InitialStateCfg()
         init_state.pos = self.position
