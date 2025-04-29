@@ -229,7 +229,7 @@ class AssetInstance(SceneAsset):
         Returns:
             AssetBaseCfg: The IsaacLab cfg object
         """
-        prim_path = f"/{scene_name}/{self.name}"
+        prim_path = f"/{scene_name}/{self.asset_class.name}/{self.name}"
         stage = omni.usd.get_context().get_stage()
 
         prim = prims_utils.create_prim(
