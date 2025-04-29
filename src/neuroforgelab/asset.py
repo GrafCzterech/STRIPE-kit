@@ -263,8 +263,13 @@ class AssetInstance(SceneAsset):
         obj.spawn = spawner
 
         init_state = obj.InitialStateCfg()
-        init_state.pos = self.position
+        init_state.pos = (
+            self.position[0],
+            self.position[2],
+            self.position[1],
+        )  # convert from xyz to xzy
         init_state.rot = self.rotation
+        obj.init_state = init_state
 
         return obj
 
