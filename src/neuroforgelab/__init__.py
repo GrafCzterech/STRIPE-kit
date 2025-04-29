@@ -6,8 +6,7 @@ from .asset import (
     AssetInstance,
     IdenticalAssetSpec,
     AssetMesh,
-    USDMesh,
-    UniversalMesh,
+    DynamicMesh,
 )
 
 __all__ = [
@@ -18,6 +17,5 @@ __all__ = [
     "AssetInstance",
     "SceneSpec",
     "AssetMesh",
-    "USDMesh",
-    "UniversalMesh",
+    "DynamicMesh",
 ]
