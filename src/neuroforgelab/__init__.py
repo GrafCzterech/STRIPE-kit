@@ -7,6 +7,7 @@ from .asset import (
     IdenticalAssetSpec,
     AssetMesh,
     DynamicMesh,
+    USDMesh,
 )
 
 __all__ = [

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from abc import abstractmethod, ABC
 import logging
+import random as rd
 
 from trimesh import Trimesh
 
@@ -41,7 +42,10 @@ class USDMesh(AssetMesh):
             UsdFileCfg: The IsaacLab cfg object
         """
         logging.debug("Creating USD mesh cfg")
-        mesh_cfg = UsdFileCfg()
+        mesh_cfg = UsdFileCfg(
+            usd_path=self.usd_path,
+            scale=(0.1, 0.1, 0.1)
+            )
         mesh_cfg.usd_path = self.usd_path
         return mesh_cfg
 
@@ -285,9 +289,9 @@ class AssetInstance(SceneAsset):
 @dataclass
 class LightSpec(SceneAsset):
 
-    exposure: float = 0.0
-    intensity: float = 1.0
-    color: tuple[float, float, float] = (1.0, 1.0, 1.0)
+    exposure: float = 11.0
+    intensity: float = 7.0
+    color: tuple[float, float, float] = (0.988, 0.957, 0.645)
 
     def to_cfg(self, scene_name: str = "World") -> AssetBaseCfg:
 
@@ -300,7 +304,7 @@ class LightSpec(SceneAsset):
 
         state = AssetBaseCfg.InitialStateCfg()
         state.pos = (0, 0, 0)
-        state.rot = (0, 0, 0, 1)
+        state.rot = (0.82294, 0.28336, -0.4656, -0.16032)
 
         cfg = AssetBaseCfg()
         cfg.prim_path = f"/{scene_name}/{self.get_name()}"
