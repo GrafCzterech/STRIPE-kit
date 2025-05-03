@@ -262,6 +262,7 @@ class AssetInstance(SceneAsset):
 
         spawner.semantic_tags.append(("name", self.name))
         spawner.semantic_tags.append(("class", self.asset_class.name))
+        spawner.semantic_tags.append(("color", "green"))
         spawner.semantic_tags.extend(self.additional_tags.items())
 
         obj.spawn = spawner
