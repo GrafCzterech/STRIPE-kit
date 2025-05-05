@@ -3,6 +3,7 @@ from typing import Callable, TypeAlias
 import logging
 
 from isaaclab.terrains import SubTerrainBaseCfg, TerrainGeneratorCfg
+from isaaclab.sim.spawners.materials import VisualMaterialCfg
 
 from trimesh import Trimesh
 import numpy as np

@@ -42,10 +42,7 @@ class USDMesh(AssetMesh):
             UsdFileCfg: The IsaacLab cfg object
         """
         logging.debug("Creating USD mesh cfg")
-        mesh_cfg = UsdFileCfg(
-            usd_path=self.usd_path,
-            scale=(0.1, 0.1, 0.1)
-            )
+        mesh_cfg = UsdFileCfg(usd_path=self.usd_path, scale=(0.1, 0.1, 0.1))
         mesh_cfg.usd_path = self.usd_path
         return mesh_cfg
 
@@ -262,7 +259,6 @@ class AssetInstance(SceneAsset):
 
         spawner.semantic_tags.append(("name", self.name))
         spawner.semantic_tags.append(("class", self.asset_class.name))
-        spawner.semantic_tags.append(("color", "green"))
         spawner.semantic_tags.extend(self.additional_tags.items())
 
         obj.spawn = spawner

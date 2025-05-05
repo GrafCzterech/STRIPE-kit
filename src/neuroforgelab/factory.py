@@ -74,7 +74,11 @@ class SceneCfgFactory:
         setattr(cfg, TERRAIN_NAME, importer)
 
         for asset in self.assets:
-            setattr(cfg, asset.get_name(), asset.to_cfg(f"{self.name}/{TERRAIN_NAME}"))
+            setattr(
+                cfg,
+                asset.get_name(),
+                asset.to_cfg(f"{self.name}/{TERRAIN_NAME}"),
+            )
 
         setattr(cfg, "robot", self.robot)
 
