@@ -2,11 +2,11 @@ from dataclasses import dataclass
 from abc import abstractmethod, ABC
 import logging
 
+from isaaclab.assets import AssetBaseCfg
+
 from .asset import AssetSpec, LightSpec
 from .terrain import TerrainInstance
 from .factory import SceneCfgFactory
-
-from isaaclab.assets import AssetBaseCfg
 
 
 @dataclass
@@ -15,7 +15,7 @@ class SceneSpec(ABC):
 
     size: tuple[float, float]
     palette: list[AssetSpec]
-    robot: AssetBaseCfg
+    robot: AssetBaseCfg | None = None
     light: LightSpec = LightSpec()
 
     def add_asset(self, asset: AssetSpec):

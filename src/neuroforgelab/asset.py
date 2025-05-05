@@ -8,7 +8,7 @@ from isaaclab.sim.spawners.lights import DistantLightCfg
 
 
 from .terrain import TerrainInstance
-from .mesh import AssetMesh
+from .mesh import AssetMesh, NAME_TAG, CLASS_TAG
 
 
 @dataclass
@@ -161,7 +161,7 @@ class SceneAsset(ABC):
 class AssetInstance(SceneAsset):
     """A specification for an asset to be placed in a scene"""
 
-    asset_class: AssetSpec
+    asset_class: AssetSpec | None
     mesh: AssetMesh
     name: str
     position: tuple[float, float, float]
@@ -177,7 +177,11 @@ class AssetInstance(SceneAsset):
         Returns:
             AssetBaseCfg: The IsaacLab cfg object
         """
-        prim_path = f"/{scene_name}/{self.asset_class.name}/{self.name}"
+
+        if self.asset_class is None:
+            prim_path = f"/{scene_name}/{self.name}"
+        else:
+            prim_path = f"/{scene_name}/{self.asset_class.name}/{self.name}"
 
         obj = AssetBaseCfg(prim_path=prim_path)
 
@@ -186,18 +190,15 @@ class AssetInstance(SceneAsset):
         if spawner.semantic_tags is None:
             spawner.semantic_tags = []
 
-        spawner.semantic_tags.append(("name", self.name))
-        spawner.semantic_tags.append(("class", self.asset_class.name))
+        spawner.semantic_tags.append((NAME_TAG, self.name))
+        if self.asset_class is not None:
+            spawner.semantic_tags.append((CLASS_TAG, self.asset_class.name))
         spawner.semantic_tags.extend(self.additional_tags.items())
 
         obj.spawn = spawner
 
         init_state = obj.InitialStateCfg()
-        init_state.pos = (
-            self.position[0],
-            self.position[2],
-            self.position[1],
-        )  # convert from xyz to xzy
+        init_state.pos = (self.position[0], self.position[1], self.position[2])
         init_state.rot = self.rotation
         obj.init_state = init_state
 

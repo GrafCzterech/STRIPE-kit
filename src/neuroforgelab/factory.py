@@ -2,11 +2,8 @@ import logging
 
 # isaaclab imports
 from isaaclab.scene import InteractiveSceneCfg
-from isaaclab.terrains import TerrainImporterCfg
-from isaaclab.assets import AssetBaseCfg
-from isaaclab.sim.spawners.materials import VisualMaterialCfg, PreviewSurfaceCfg
 
-from .asset import SceneAsset
+from .asset import SceneAsset, AssetBaseCfg
 from .terrain import TerrainInstance
 
 TERRAIN_NAME = "terrain"
@@ -18,7 +15,7 @@ class SceneCfgFactory:
     def __init__(
         self,
         terrain: TerrainInstance,
-        robot: AssetBaseCfg,
+        robot: AssetBaseCfg | None = None,
         name: str = "World",
     ):
         """Create a new SceneCfgFactory object
@@ -68,24 +65,30 @@ class SceneCfgFactory:
         # this is ever so slightly more performant, that creating a new dynamic class(an object) then an instance of that class (yet another object)
         cfg = InteractiveSceneCfg()
 
-        importer = TerrainImporterCfg()
-        importer.prim_path = f"/{self.name}/{TERRAIN_NAME}"
-        importer.terrain_type = "generator"
-        importer.terrain_generator = self.terrain.to_cfg()
-        importer.visual_material = PreviewSurfaceCfg(
-            diffuse_color=self.terrain.color
+        setattr(
+            cfg,
+            TERRAIN_NAME,
+            self.terrain.to_asset_cfg(f"{self.name}/{TERRAIN_NAME}"),
         )
-
-        setattr(cfg, TERRAIN_NAME, importer)
 
         for asset in self.assets:
             setattr(
                 cfg,
                 asset.get_name(),
-                asset.to_cfg(f"{self.name}/{TERRAIN_NAME}"),
+                asset.to_cfg(self.name),
             )
 
-        setattr(cfg, "robot", self.robot)
+        if self.robot is not None:
+            if isinstance(self.robot, AssetBaseCfg):
+                robot_cfg = self.robot
+                robot_cfg.prim_path = f"/{self.name}/{TERRAIN_NAME}/robot"
+            else:
+                robot_cfg = self.robot.to_cfg(f"{self.name}/{TERRAIN_NAME}")
+            setattr(
+                cfg,
+                "robot",
+                robot_cfg,
+            )
 
         setattr(cfg, "num_envs", 1)
         setattr(cfg, "env_spacing", 0.0)

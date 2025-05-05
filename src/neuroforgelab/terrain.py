@@ -2,9 +2,15 @@ from dataclasses import dataclass
 import logging
 
 from isaaclab.terrains import SubTerrainBaseCfg, TerrainGeneratorCfg
+from isaaclab.assets import AssetBaseCfg
+from isaaclab.sim.schemas import RigidBodyPropertiesCfg, CollisionPropertiesCfg
+from isaaclab.sim.spawners import RigidBodyMaterialCfg
 
 from trimesh import Trimesh
 import numpy as np
+
+
+from .mesh import DynamicMesh, CLASS_TAG, NAME_TAG
 
 
 @dataclass
@@ -39,3 +45,28 @@ class TerrainInstance:
         terrain_cfg.size = self.size
 
         return terrain_cfg
+
+    def to_asset_cfg(self, scene_name: str) -> AssetBaseCfg:
+        """Create a AssetBaseCfg object from a TerrainInstance object
+
+        Args:
+            prim_path (str): The prim path to use for the terrain
+
+        Returns:
+            AssetBaseCfg: The AssetBaseCfg object
+        """
+        spawner = DynamicMesh(self.mesh).to_cfg()
+        spawner.semantic_tags = [
+            (NAME_TAG, "terrain"),
+            (CLASS_TAG, "terrain"),
+        ]
+        spawner.collision_props = CollisionPropertiesCfg(
+            collision_enabled=True,
+        )
+        spawner.rigid_props = RigidBodyPropertiesCfg(
+            rigid_body_enabled=True,
+            kinematic_enabled=True,
+            disable_gravity=True,
+        )
+        spawner.physics_material = RigidBodyMaterialCfg()
+        return AssetBaseCfg(prim_path=f"/{scene_name}/terrain", spawn=spawner)
