@@ -4,6 +4,7 @@ import logging
 from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.terrains import TerrainImporterCfg
 from isaaclab.assets import AssetBaseCfg
+from isaaclab.sim.spawners.materials import VisualMaterialCfg, PreviewSurfaceCfg
 
 from .asset import SceneAsset
 from .terrain import TerrainInstance
@@ -70,7 +71,11 @@ class SceneCfgFactory:
         importer = TerrainImporterCfg()
         importer.prim_path = f"/{self.name}/{TERRAIN_NAME}"
         importer.terrain_type = "generator"
-        importer.terrain_generator = self.terrain.to_terrain_generator_cfg()
+        importer.terrain_generator = self.terrain.to_cfg()
+        importer.visual_material = PreviewSurfaceCfg(
+            diffuse_color=self.terrain.color
+        )
+
         setattr(cfg, TERRAIN_NAME, importer)
 
         for asset in self.assets:

@@ -1,17 +1,10 @@
 from dataclasses import dataclass
-from typing import Callable, TypeAlias
 import logging
 
 from isaaclab.terrains import SubTerrainBaseCfg, TerrainGeneratorCfg
-from isaaclab.sim.spawners.materials import VisualMaterialCfg
 
 from trimesh import Trimesh
 import numpy as np
-
-TerrainGenFunc: TypeAlias = Callable[
-    [float, SubTerrainBaseCfg],
-    tuple[list[Trimesh], np.ndarray],
-]
 
 
 @dataclass
@@ -25,8 +18,9 @@ class TerrainInstance:
     """The position where the robot should spawn"""
     size: tuple[float, float]
     """The size of the terrain in meters"""
+    color: tuple[float, float, float] = (0.18, 0.18, 0.18)
 
-    def to_terrain_generator_cfg(self) -> TerrainGeneratorCfg:
+    def to_cfg(self) -> TerrainGeneratorCfg:
         """Create a TerrainGeneratorCfg object from a TerrainInstance object
 
         Returns:
