@@ -5,10 +5,20 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 from isaaclab.assets import AssetBaseCfg
+from isaaclab.managers import EventTermCfg
 
 from .asset import AssetSpec, LightSpec
 from .terrain import TerrainInstance
 from .factory import SceneCfgFactory
+
+
+def spawn_cfg(cfg: AssetBaseCfg) -> None:
+    if cfg.spawn is not None:
+        cfg.spawn.func(cfg.prim_path, cfg)
+    else:
+        raise ValueError(
+            f"Spawn function not set for {cfg.__class__.__name__} asset"
+        )
 
 
 @dataclass
@@ -64,3 +74,35 @@ class SceneSpec(ABC):
         logger.debug("Adding light")
         factory.add_asset(self.light)
         return factory
+
+    def create_reset_event(self, scene_name: str) -> EventTermCfg:
+        """Creates a reset event, that will initialize the scene with the
+        terrain and assets specified in the SceneSpec object.
+
+        Args:
+            scene_name (str): The name of the scene to use for the reset event
+
+        Returns:
+            EventTermCfg: The EventTermCfg object
+        """
+
+        def reset_func() -> None:
+            logger.debug("Resetting scene")
+            # Reset the terrain
+            terrain = self.generate()
+            spawn_cfg(terrain.to_asset_cfg(scene_name))
+            # Reset the assets
+            for asset in self.palette:
+                logger.debug(f"Resetting asset {asset.name}")
+                children = asset.generate(terrain)
+                for child in children:
+                    spawn_cfg(child.to_cfg(scene_name))
+            # Reset the light
+            logger.debug("Resetting light")
+            spawn_cfg(self.light.to_cfg(scene_name))
+            # Reset the robot
+            if self.robot is not None:
+                logger.debug("Resetting robot")
+                spawn_cfg(self.robot)
+
+        return EventTermCfg(func=reset_func, mode="reset", params={})
