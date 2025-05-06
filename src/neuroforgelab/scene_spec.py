@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from abc import abstractmethod, ABC
-import logging
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 from isaaclab.assets import AssetBaseCfg
 
@@ -51,14 +53,14 @@ class SceneSpec(ABC):
         Returns:
             SceneCfgFactory: The SceneCfgFactory object
         """
-        logging.debug("Generating terrain")
+        logger.debug("Generating terrain")
         terrain = self.generate()
         factory = SceneCfgFactory(terrain, self.robot)
         for asset in self.palette:
-            logging.debug(f"Generating asset {asset.name}")
+            logger.debug(f"Generating asset {asset.name}")
             children = asset.generate(terrain)
             for child in children:
                 factory.add_asset(child)
-        logging.debug("Adding light")
+        logger.debug("Adding light")
         factory.add_asset(self.light)
         return factory

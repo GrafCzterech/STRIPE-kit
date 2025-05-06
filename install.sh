@@ -19,4 +19,4 @@ fi
 python3.10 -m venv env_isaaclab
 source env_isaaclab/bin/activate
 pip install -e .
-pip install isaaclab[isaacsim,all]==2.0.2 --extra-index-url https://pypi.nvidia.com
+pip install isaaclab[isaacsim,all] --extra-index-url https://pypi.nvidia.com

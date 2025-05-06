@@ -1,5 +1,7 @@
 from dataclasses import dataclass
-import logging
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 from isaaclab.terrains import SubTerrainBaseCfg, TerrainGeneratorCfg
 from isaaclab.assets import AssetBaseCfg
@@ -10,7 +12,7 @@ from trimesh import Trimesh
 import numpy as np
 
 
-from .mesh import DynamicMesh, CLASS_TAG, NAME_TAG
+from .mesh import DynamicMesh, CLASS_TAG
 
 
 @dataclass
@@ -24,7 +26,6 @@ class TerrainInstance:
     """The position where the robot should spawn"""
     size: tuple[float, float]
     """The size of the terrain in meters"""
-    color: tuple[float, float, float] = (0.18, 0.18, 0.18)
 
     def to_cfg(self) -> TerrainGeneratorCfg:
         """Create a TerrainGeneratorCfg object from a TerrainInstance object
@@ -32,7 +33,7 @@ class TerrainInstance:
         Returns:
             TerrainGeneratorCfg: The TerrainGeneratorCfg object
         """
-        logging.debug("Creating terrain generator cfg")
+        logger.debug("Creating terrain generator cfg")
         sub_terrain = SubTerrainBaseCfg()
         sub_terrain.function = lambda diff, cfg: (
             [self.mesh],
@@ -55,9 +56,9 @@ class TerrainInstance:
         Returns:
             AssetBaseCfg: The AssetBaseCfg object
         """
+        logger.debug("Creating terrain asset cfg")
         spawner = DynamicMesh(self.mesh).to_cfg()
         spawner.semantic_tags = [
-            (NAME_TAG, "terrain"),
             (CLASS_TAG, "terrain"),
         ]
         spawner.collision_props = CollisionPropertiesCfg(

@@ -1,4 +1,6 @@
-import logging
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 # isaaclab imports
 from isaaclab.scene import InteractiveSceneCfg
@@ -11,6 +13,8 @@ TERRAIN_NAME = "terrain"
 
 class SceneCfgFactory:
     """A factory class for creating InteractiveSceneCfg objects from TerrainSpec and AssetSpec objects"""
+
+    robot_name: str = "robot"
 
     def __init__(
         self,
@@ -52,15 +56,17 @@ class SceneCfgFactory:
             )
         self.assets.append(asset)
         self.names.add(asset.get_name())
-        logging.debug(f"Added asset {asset.get_name()}")
+        logger.debug(f"Added asset {asset.get_name()}")
 
-    def new_scene(self) -> InteractiveSceneCfg:
+    def new_scene(
+        self,
+    ) -> InteractiveSceneCfg:
         """Create a new InteractiveSceneCfg object from the TerrainSpec and AssetSpec objects
 
         Returns:
             InteractiveSceneCfg: The InteractiveSceneCfg object
         """
-        logging.debug("Creating scene cfg")
+        logger.debug("Creating scene cfg")
 
         # this is ever so slightly more performant, that creating a new dynamic class(an object) then an instance of that class (yet another object)
         cfg = InteractiveSceneCfg()
@@ -81,12 +87,14 @@ class SceneCfgFactory:
         if self.robot is not None:
             if isinstance(self.robot, AssetBaseCfg):
                 robot_cfg = self.robot
-                robot_cfg.prim_path = f"/{self.name}/{TERRAIN_NAME}/robot"
+                robot_cfg.prim_path = (
+                    f"/{self.name}/{TERRAIN_NAME}/{self.robot_name}"
+                )
             else:
                 robot_cfg = self.robot.to_cfg(f"{self.name}/{TERRAIN_NAME}")
             setattr(
                 cfg,
-                "robot",
+                self.robot_name,
                 robot_cfg,
             )
 

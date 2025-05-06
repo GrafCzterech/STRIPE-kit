@@ -1,14 +1,15 @@
 from dataclasses import dataclass
 from abc import abstractmethod, ABC
-import logging
+from logging import getLogger
 
+logger = getLogger(__name__)
 
 from isaaclab.assets import AssetBaseCfg
 from isaaclab.sim.spawners.lights import DistantLightCfg
 
 
 from .terrain import TerrainInstance
-from .mesh import AssetMesh, NAME_TAG, CLASS_TAG
+from .mesh import AssetMesh, CLASS_TAG
 
 
 @dataclass
@@ -190,7 +191,6 @@ class AssetInstance(SceneAsset):
         if spawner.semantic_tags is None:
             spawner.semantic_tags = []
 
-        spawner.semantic_tags.append((NAME_TAG, self.name))
         if self.asset_class is not None:
             spawner.semantic_tags.append((CLASS_TAG, self.asset_class.name))
         spawner.semantic_tags.extend(self.additional_tags.items())
@@ -222,7 +222,7 @@ class LightSpec(SceneAsset):
 
     def to_cfg(self, scene_name: str = "World") -> AssetBaseCfg:
 
-        logging.debug("Creating light cfg")
+        logger.debug("Creating light cfg")
 
         light_cfg = DistantLightCfg()
         light_cfg.exposure = self.exposure
