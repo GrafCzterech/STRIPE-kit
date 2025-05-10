@@ -91,7 +91,8 @@ class SceneSpec(ABC):
             logger.debug("Resetting scene")
             # Reset the terrain
             terrain = self.generate()
-            spawn_cfg(terrain.to_asset_cfg(scene_name))
+            for asset in terrain.to_asset_cfg(scene_name):
+                spawn_cfg(asset)
             # Reset the assets
             for asset in self.palette:
                 logger.debug(f"Resetting asset {asset.name}")

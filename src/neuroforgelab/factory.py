@@ -6,9 +6,7 @@ logger = getLogger(__name__)
 from isaaclab.scene import InteractiveSceneCfg
 
 from .asset import SceneAsset, AssetBaseCfg
-from .terrain import TerrainInstance
-
-TERRAIN_NAME = "terrain"
+from .terrain import TerrainInstance, TERRAIN_NAME
 
 
 class SceneCfgFactory:
@@ -71,11 +69,12 @@ class SceneCfgFactory:
         # this is ever so slightly more performant, that creating a new dynamic class(an object) then an instance of that class (yet another object)
         cfg = InteractiveSceneCfg()
 
-        setattr(
-            cfg,
-            TERRAIN_NAME,
-            self.terrain.to_asset_cfg(f"{self.name}/{TERRAIN_NAME}"),
-        )
+        for i, asset in enumerate(self.terrain.to_asset_cfg(self.name)):
+            setattr(
+                cfg,
+                TERRAIN_NAME + f"_{i}",
+                asset,
+            )
 
         for asset in self.assets:
             setattr(

@@ -11,16 +11,17 @@ from isaaclab.sim.spawners import RigidBodyMaterialCfg
 from trimesh import Trimesh
 import numpy as np
 
+from .mesh import DynamicMesh
 
-from .mesh import DynamicMesh, CLASS_TAG
+TERRAIN_NAME = "terrain"
 
 
 @dataclass
 class TerrainInstance:
     """A specification for a terrain to be placed in a scene"""
 
-    mesh: Trimesh
-    """The mesh of the terrain"""
+    mesh: list[tuple[Trimesh, list[tuple[str, str]]]]
+    """The mesh of the terrain and the tags to add to the mesh"""
     # slight performance hickup, as this form of data init causes a new object allocation, but this is more readable
     origin: tuple[float, float, float]
     """The position where the robot should spawn"""
@@ -36,7 +37,7 @@ class TerrainInstance:
         logger.debug("Creating terrain generator cfg")
         sub_terrain = SubTerrainBaseCfg()
         sub_terrain.function = lambda diff, cfg: (
-            [self.mesh],
+            [m[0] for m in self.mesh],
             np.array(self.origin),
         )
         sub_terrain.size = self.size
@@ -47,7 +48,7 @@ class TerrainInstance:
 
         return terrain_cfg
 
-    def to_asset_cfg(self, scene_name: str) -> AssetBaseCfg:
+    def to_asset_cfg(self, scene_name: str) -> list[AssetBaseCfg]:
         """Create a AssetBaseCfg object from a TerrainInstance object
 
         Args:
@@ -57,17 +58,23 @@ class TerrainInstance:
             AssetBaseCfg: The AssetBaseCfg object
         """
         logger.debug("Creating terrain asset cfg")
-        spawner = DynamicMesh(self.mesh).to_cfg()
-        spawner.semantic_tags = [
-            (CLASS_TAG, "terrain"),
-        ]
-        spawner.collision_props = CollisionPropertiesCfg(
-            collision_enabled=True,
-        )
-        spawner.rigid_props = RigidBodyPropertiesCfg(
-            rigid_body_enabled=True,
-            kinematic_enabled=True,
-            disable_gravity=True,
-        )
-        spawner.physics_material = RigidBodyMaterialCfg()
-        return AssetBaseCfg(prim_path=f"/{scene_name}/terrain", spawn=spawner)
+        res = []
+        for i, (mesh, tags) in enumerate(self.mesh):
+            spawner = DynamicMesh(mesh).to_cfg()
+            spawner.semantic_tags = tags
+            spawner.collision_props = CollisionPropertiesCfg(
+                collision_enabled=True,
+            )
+            spawner.rigid_props = RigidBodyPropertiesCfg(
+                rigid_body_enabled=True,
+                kinematic_enabled=True,
+                disable_gravity=True,
+            )
+            spawner.physics_material = RigidBodyMaterialCfg()
+            res.append(
+                AssetBaseCfg(
+                    prim_path=f"/{scene_name}/{TERRAIN_NAME}/{TERRAIN_NAME}_{i}",
+                    spawn=spawner,
+                )
+            )
+        return res
