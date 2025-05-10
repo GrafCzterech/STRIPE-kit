@@ -86,7 +86,8 @@ class SceneSpec(ABC):
             EventTermCfg: The EventTermCfg object
         """
 
-        def reset_func() -> None:
+        # FIXME this function is called on a non reset scene? WHAT?
+        def reset_func(*args) -> None:
             logger.debug("Resetting scene")
             # Reset the terrain
             terrain = self.generate()
