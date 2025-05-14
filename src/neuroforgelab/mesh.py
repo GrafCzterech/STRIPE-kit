@@ -97,6 +97,9 @@ class DynamicMesh(AssetMesh):
     def to_cfg(self) -> MeshCfg:
         logger.debug("Creating dynamic mesh cfg")
 
+        # https://github.com/isaac-sim/IsaacLab/blob/2e6946afb9b26f6949d4b1fd0a00e9f4ef733fcc/source/isaaclab/isaaclab/sim/spawners/meshes/meshes.py#L320
+        # FIXME this applies a solid cube like collider to the mesh, which is not what we want
+
         def func_wrapper(prim: str, cfg: MeshCfg, *args, **kwargs):
             _spawn_mesh_geom_from_mesh(prim, cfg, self.mesh, *args, **kwargs)
             p = prim_utils.get_prim_at_path(prim)

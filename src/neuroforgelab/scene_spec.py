@@ -7,6 +7,8 @@ logger = getLogger(__name__)
 from isaaclab.assets import AssetBaseCfg
 from isaaclab.managers import EventTermCfg
 
+import isaacsim.core.utils.stage as stage_utils  # type: ignore
+
 from .asset import AssetSpec, LightSpec
 from .terrain import TerrainInstance
 from .factory import SceneCfgFactory
@@ -85,6 +87,8 @@ class SceneSpec(ABC):
         Returns:
             EventTermCfg: The EventTermCfg object
         """
+
+        stage_utils.clear_stage()
 
         # FIXME this function is called on a non reset scene? WHAT?
         def reset_func(*args) -> None:

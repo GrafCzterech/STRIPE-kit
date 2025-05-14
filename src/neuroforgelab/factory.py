@@ -58,6 +58,8 @@ class SceneCfgFactory:
 
     def new_scene(
         self,
+        num_envs: int = 1,
+        env_spacing: float = 0.0,
     ) -> InteractiveSceneCfg:
         """Create a new InteractiveSceneCfg object from the TerrainSpec and AssetSpec objects
 
@@ -97,7 +99,7 @@ class SceneCfgFactory:
                 robot_cfg,
             )
 
-        setattr(cfg, "num_envs", 1)
-        setattr(cfg, "env_spacing", 0.0)
+        setattr(cfg, "num_envs", num_envs)
+        setattr(cfg, "env_spacing", env_spacing)
 
         return cfg

@@ -63,12 +63,13 @@ class TerrainInstance:
             spawner = DynamicMesh(mesh).to_cfg()
             spawner.semantic_tags = tags
             spawner.collision_props = CollisionPropertiesCfg(
-                collision_enabled=True,
+                collision_enabled=True, contact_offset=0.01
             )
             spawner.rigid_props = RigidBodyPropertiesCfg(
-                rigid_body_enabled=True,
-                kinematic_enabled=True,
                 disable_gravity=True,
+                max_linear_velocity=0.0,
+                max_angular_velocity=0.0,
+                kinematic_enabled=True,
             )
             spawner.physics_material = RigidBodyMaterialCfg()
             res.append(
