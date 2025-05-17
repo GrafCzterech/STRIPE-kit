@@ -62,16 +62,6 @@ class TerrainInstance:
         for i, (mesh, tags) in enumerate(self.mesh):
             spawner = DynamicMesh(mesh).to_cfg()
             spawner.semantic_tags = tags
-            spawner.collision_props = CollisionPropertiesCfg(
-                collision_enabled=True, contact_offset=0.01
-            )
-            spawner.rigid_props = RigidBodyPropertiesCfg(
-                disable_gravity=True,
-                max_linear_velocity=0.0,
-                max_angular_velocity=0.0,
-                kinematic_enabled=True,
-            )
-            spawner.physics_material = RigidBodyMaterialCfg()
             res.append(
                 AssetBaseCfg(
                     prim_path=f"/{scene_name}/{TERRAIN_NAME}/{TERRAIN_NAME}_{i}",
