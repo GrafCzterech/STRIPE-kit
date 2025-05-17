@@ -12,10 +12,8 @@ from Semantics import SemanticsAPI  # type: ignore
 
 from isaaclab.sim.converters import MeshConverterCfg, MeshConverter
 from isaaclab.sim.spawners import UsdFileCfg, SpawnerCfg
-from isaaclab.sim.spawners.meshes import MeshCfg
-
-# thats right a secret forbidden import!
-from isaaclab.sim.spawners.meshes.meshes import _spawn_mesh_geom_from_mesh
+from isaaclab.terrains.utils import create_prim_from_mesh
+from isaaclab.assets import AssetBaseCfg
 
 CLASS_TAG = "class"
 
@@ -92,20 +90,24 @@ class DynamicMesh(AssetMesh):
     mesh: Trimesh
 
     # inspiration:
-    # https://github.com/isaac-sim/IsaacLab/blob/2e6946afb9b26f6949d4b1fd0a00e9f4ef733fcc/source/isaaclab/isaaclab/sim/spawners/meshes/meshes.py#L99
+    # https://github.com/isaac-sim/IsaacLab/blob/963b53b96bc6140670fa0fe41d9fbafa68d8382f/source/isaaclab/isaaclab/terrains/utils.py#L61
 
-    def to_cfg(self) -> MeshCfg:
+    def to_cfg(self) -> SpawnerCfg:
         logger.debug("Creating dynamic mesh cfg")
 
-        # https://github.com/isaac-sim/IsaacLab/blob/2e6946afb9b26f6949d4b1fd0a00e9f4ef733fcc/source/isaaclab/isaaclab/sim/spawners/meshes/meshes.py#L320
-        # FIXME this applies a solid cube like collider to the mesh, which is not what we want
-
-        def func_wrapper(prim: str, cfg: MeshCfg, *args, **kwargs):
-            _spawn_mesh_geom_from_mesh(prim, cfg, self.mesh, *args, **kwargs)
+        def func_wrapper(prim: str, cfg: SpawnerCfg, *args, **kwargs):
+            create_prim_from_mesh(
+                prim,
+                self.mesh,
+                # visual_material=cfg.visual_material,
+                # physics_material=cfg.physics_material,
+                *args,
+                **kwargs,
+            )
             p = prim_utils.get_prim_at_path(prim)
             if cfg.semantic_tags is not None:
                 for tag, value in cfg.semantic_tags:
                     apply_semantics(p, tag, value)
             return p
 
-        return MeshCfg(func=func_wrapper)
+        return SpawnerCfg(func=func_wrapper)
