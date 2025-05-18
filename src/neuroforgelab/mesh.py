@@ -7,8 +7,8 @@ logger = getLogger(__name__)
 from trimesh import Trimesh
 
 import isaacsim.core.utils.prims as prim_utils  # type: ignore
-from pxr.Sdf import Path  # type: ignore
-from Semantics import SemanticsAPI  # type: ignore
+import isaacsim.core.utils.semantics as semantics_utils  # type: ignore
+from pxr.Usd import Prim  # type: ignore
 
 from isaaclab.sim.converters import MeshConverterCfg, MeshConverter
 from isaaclab.sim.spawners import UsdFileCfg, SpawnerCfg
@@ -67,21 +67,15 @@ class UniversalMesh(AssetMesh):
         return mesh_cfg
 
 
-def apply_semantics(prim: Path, type: str, value: str) -> None:
+def apply_semantics(prim: Prim, type: str, value: str) -> None:
     """Applies a semantic type and data to a prim.
 
     Args:
-        prim (Path): A special type of a string that represents a prim in a stage
+        prim (Prim): A special type of a string that represents a prim in a stage
         type (str): Label
         value (str): Value
     """
-    instance_name = f"{type}_{value}"
-    sem = SemanticsAPI.Apply(prim, instance_name)
-    # create semantic type and data attributes
-    sem.CreateSemanticTypeAttr()
-    sem.CreateSemanticDataAttr()
-    sem.GetSemanticTypeAttr().Set(type)
-    sem.GetSemanticDataAttr().Set(value)
+    semantics_utils.add_update_semantics(prim, value, type)
 
 
 @dataclass

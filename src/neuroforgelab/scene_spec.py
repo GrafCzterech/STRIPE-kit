@@ -7,6 +7,7 @@ logger = getLogger(__name__)
 from isaaclab.assets import AssetBaseCfg
 from isaaclab.managers import EventTermCfg
 
+# https://docs.isaacsim.omniverse.nvidia.com/4.5.0/py/source/extensions/isaacsim.core.utils/docs/index.html#module-isaacsim.core.utils.stage
 import isaacsim.core.utils.stage as stage_utils  # type: ignore
 
 from .asset import AssetSpec, LightSpec
@@ -16,7 +17,7 @@ from .factory import SceneCfgFactory
 
 def spawn_cfg(cfg: AssetBaseCfg) -> None:
     if cfg.spawn is not None:
-        cfg.spawn.func(cfg.prim_path, cfg)
+        cfg.spawn.func(cfg.prim_path, cfg.spawn)
     else:
         raise ValueError(
             f"Spawn function not set for {cfg.__class__.__name__} asset"
@@ -88,11 +89,15 @@ class SceneSpec(ABC):
             EventTermCfg: The EventTermCfg object
         """
 
-        stage_utils.clear_stage()
-
-        # FIXME this function is called on a non reset scene? WHAT?
         def reset_func(*args) -> None:
+
+            # FIXME this scene reset causes a very fun exception
+            # suposedly because you cant delete shit while the simulation is running
+            # https://forums.developer.nvidia.com/t/delete-prim-from-simulation-and-keep-the-simulation-running/328770
+
             logger.debug("Resetting scene")
+            stage_utils.clear_stage()
+
             # Reset the terrain
             terrain = self.generate()
             for asset in terrain.to_asset_cfg(scene_name):
