@@ -9,6 +9,7 @@ from isaaclab.managers import EventTermCfg
 
 # https://docs.isaacsim.omniverse.nvidia.com/4.5.0/py/source/extensions/isaacsim.core.utils/docs/index.html#module-isaacsim.core.utils.stage
 import isaacsim.core.utils.stage as stage_utils  # type: ignore
+import isaacsim.core.utils.prims as prims_utils  # type: ignore
 
 from .asset import AssetSpec, LightSpec
 from .terrain import TerrainInstance
@@ -96,6 +97,7 @@ class SceneSpec(ABC):
             # https://forums.developer.nvidia.com/t/delete-prim-from-simulation-and-keep-the-simulation-running/328770
 
             logger.debug("Resetting scene")
+            # [omni.physx.tensors.plugin] prim '/World/terrain/robot/hr_uleg/collisions/mesh_0' was deleted while being used by a shape in a tensor view class. The physics.tensors simulationView was invalidated.
             stage_utils.clear_stage()
 
             # Reset the terrain
