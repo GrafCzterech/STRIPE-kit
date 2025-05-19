@@ -15,7 +15,8 @@ from .mesh import AssetMesh, CLASS_TAG
 @dataclass
 class AssetSpec(ABC):
     """A specification for an asset to be placed in a scene. We know nothing
-    about the asset, beyond that it has a name."""
+    about the asset, beyond that it has a name. This is a base class for all
+    assets"""
 
     name: str
 
