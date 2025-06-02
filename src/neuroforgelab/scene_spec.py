@@ -95,17 +95,18 @@ class SceneSpec(ABC):
 
             env.sim.pause()
 
-            # FIXME this scene reset causes a very fun exception
-            # suposedly because you cant delete shit while the simulation is running
-            # https://forums.developer.nvidia.com/t/delete-prim-from-simulation-and-keep-the-simulation-running/328770
+            # print(dir(env.sim))
+            # ['RenderMode', ... ,  'add_physics_callback', 'add_render_callback', 'add_stage_callback', 'add_timeline_callback', 'app', 'backend', 'backend_utils', 'cfg', 'clear', 'clear_all_callbacks', 'clear_instance', 'clear_physics_callbacks', 'clear_render_callbacks', 'clear_stage_callbacks', 'clear_timeline_callbacks', 'current_time', 'current_time_step_index', 'device', 'forward', 'get_block_on_render', 'get_physics_context', 'get_physics_dt', 'get_rendering_dt', 'get_setting', 'get_version', 'has_gui', 'has_rtx_sensors', 'initialize_physics', 'initialize_simulation_context_async', 'instance', 'is_fabric_enabled', 'is_playing', 'is_simulating', 'is_stopped', 'pause', 'pause_async', 'physics_callback_exists', 'physics_sim_view', 'play', 'play_async', 'remove_physics_callback', 'remove_render_callback', 'remove_stage_callback', 'remove_timeline_callback', 'render', 'render_async', 'render_callback_exists', 'render_mode', 'reset', 'reset_async', 'set_block_on_render', 'set_camera_view', 'set_render_mode', 'set_setting', 'set_simulation_dt', 'stage', 'stage_callback_exists', 'step', 'stop', 'stop_async', 'timeline_callback_exists']
 
-            print(dir(env.sim))
-
-            # ['RenderMode', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_app', '_app_control_on_stop_callback', '_app_control_on_stop_handle', '_current_time', '_device', '_event_timer_callback', '_extension_manager', '_fabric_iface', '_framework', '_gravity_tensor', '_has_gui', '_init_stage', '_initial_physics_dt', '_initial_physics_prim_path', '_initial_rendering_dt', '_initial_stage_units_in_meters', '_initialize_stage_async', '_instance', '_isaacsim_version', '_livestream_gui', '_load_fabric_interface', '_local_gui', '_loop_runner', '_message_bus', '_number_of_steps', '_offscreen_render', '_on_post_physics_ready', '_on_post_physics_ready_callback', '_physics_callback_functions', '_physics_context', '_physics_functions', '_physics_timer_callback', '_physics_timer_callback_fn', '_physx_fabric_interface', '_render_callback_functions', '_render_throttle_counter', '_render_throttle_period', '_render_viewport', '_rendering_dt', '_set_additional_physx_params', '_set_defaults', '_settings', '_setup_default_callback_fns', '_sim_context_initialized', '_sim_params', '_stage_callback_functions', '_stage_open_callback', '_stage_open_callback_fn', '_timeline', '_timeline_callback_functions', '_timeline_timer_callback_fn', '_update_fabric', '_viewport_context', '_viewport_window', 'add_physics_callback', 'add_render_callback', 'add_stage_callback', 'add_timeline_callback', 'app', 'backend', 'backend_utils', 'cfg', 'clear', 'clear_all_callbacks', 'clear_instance', 'clear_physics_callbacks', 'clear_render_callbacks', 'clear_stage_callbacks', 'clear_timeline_callbacks', 'current_time', 'current_time_step_index', 'device', 'forward', 'get_block_on_render', 'get_physics_context', 'get_physics_dt', 'get_rendering_dt', 'get_setting', 'get_version', 'has_gui', 'has_rtx_sensors', 'initialize_physics', 'initialize_simulation_context_async', 'instance', 'is_fabric_enabled', 'is_playing', 'is_simulating', 'is_stopped', 'pause', 'pause_async', 'physics_callback_exists', 'physics_sim_view', 'play', 'play_async', 'remove_physics_callback', 'remove_render_callback', 'remove_stage_callback', 'remove_timeline_callback', 'render', 'render_async', 'render_callback_exists', 'render_mode', 'reset', 'reset_async', 'set_block_on_render', 'set_camera_view', 'set_render_mode', 'set_setting', 'set_simulation_dt', 'stage', 'stage_callback_exists', 'step', 'stop', 'stop_async', 'timeline_callback_exists']
+            # if env.sim.is_simulating():
+            #    raise RuntimeError(
+            #        "Cannot reset scene while simulation is running. Please stop the simulation first."
+            #    )
 
             logger.debug("Resetting scene")
             # [omni.physx.tensors.plugin] prim '/World/terrain/robot/hr_uleg/collisions/mesh_0' was deleted while being used by a shape in a tensor view class. The physics.tensors simulationView was invalidated.
-            stage_utils.clear_stage()
+
+            stage_utils.clear_stage(lambda prim: "robot" not in prim)
 
             # Reset the terrain
             terrain = self.generate()
@@ -120,11 +121,10 @@ class SceneSpec(ABC):
             # Reset the light
             logger.debug("Resetting light")
             spawn_cfg(self.light.to_cfg(scene_name))
-            # Reset the robot
-            if self.robot is not None:
-                logger.debug("Resetting robot")
-                spawn_cfg(self.robot)
 
             env.sim.play()
+
+            # Reset the robot
+            # TODO
 
         return EventTermCfg(func=reset_func, mode="reset", params={})
