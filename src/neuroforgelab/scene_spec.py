@@ -106,25 +106,25 @@ class SceneSpec(ABC):
             logger.debug("Resetting scene")
             # [omni.physx.tensors.plugin] prim '/World/terrain/robot/hr_uleg/collisions/mesh_0' was deleted while being used by a shape in a tensor view class. The physics.tensors simulationView was invalidated.
 
+            # FIXME remove only assets and terrain, not the robot
+
             stage_utils.clear_stage(lambda prim: "robot" not in prim)
 
             # Reset the terrain
             terrain = self.generate()
             for asset in terrain.to_asset_cfg(scene_name):
                 spawn_cfg(asset)
+
             # Reset the assets
             for asset in self.palette:
                 logger.debug(f"Resetting asset {asset.name}")
                 children = asset.generate(terrain)
                 for child in children:
                     spawn_cfg(child.to_cfg(scene_name))
-            # Reset the light
-            logger.debug("Resetting light")
-            spawn_cfg(self.light.to_cfg(scene_name))
-
-            env.sim.play()
 
             # Reset the robot
             # TODO
+
+            env.sim.play()
 
         return EventTermCfg(func=reset_func, mode="reset", params={})
