@@ -89,10 +89,10 @@ class SceneCfgFactory:
             if isinstance(self.robot, AssetBaseCfg):
                 robot_cfg = self.robot
                 robot_cfg.prim_path = (
-                    f"/{self.name}/{TERRAIN_NAME}/{self.robot_name}"
+                    f"/{self.name}/{self.robot_name}"
                 )
             else:
-                robot_cfg = self.robot.to_cfg(f"{self.name}/{TERRAIN_NAME}")
+                robot_cfg = self.robot.to_cfg(self.name)
             setattr(
                 cfg,
                 self.robot_name,

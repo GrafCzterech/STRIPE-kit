@@ -62,10 +62,12 @@ class TerrainInstance:
         for i, (mesh, tags) in enumerate(self.mesh):
             spawner = DynamicMesh(mesh).to_cfg()
             spawner.semantic_tags = tags
+            cfg = AssetBaseCfg(
+                prim_path=f"/{scene_name}/{TERRAIN_NAME}/{TERRAIN_NAME}_{i}",
+                spawn=spawner,
+            )
+            cfg.collision_group = -1
             res.append(
-                AssetBaseCfg(
-                    prim_path=f"/{scene_name}/{TERRAIN_NAME}/{TERRAIN_NAME}_{i}",
-                    spawn=spawner,
-                )
+                cfg
             )
         return res
