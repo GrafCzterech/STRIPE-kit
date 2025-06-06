@@ -5,8 +5,6 @@ logger = getLogger(__name__)
 
 from isaaclab.terrains import SubTerrainBaseCfg, TerrainGeneratorCfg
 from isaaclab.assets import AssetBaseCfg
-from isaaclab.sim.schemas import RigidBodyPropertiesCfg, CollisionPropertiesCfg
-from isaaclab.sim.spawners import RigidBodyMaterialCfg
 
 from trimesh import Trimesh
 import numpy as np
@@ -66,6 +64,7 @@ class TerrainInstance:
                 prim_path=f"/{scene_name}/{TERRAIN_NAME}/{TERRAIN_NAME}_{i}",
                 spawn=spawner,
             )
+            cfg.init_state = cfg.InitialStateCfg()
             cfg.collision_group = -1
             res.append(
                 cfg

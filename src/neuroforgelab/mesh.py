@@ -13,7 +13,6 @@ from pxr.Usd import Prim  # type: ignore
 from isaaclab.sim.converters import MeshConverterCfg, MeshConverter
 from isaaclab.sim.spawners import UsdFileCfg, SpawnerCfg
 from isaaclab.terrains.utils import create_prim_from_mesh
-from isaaclab.assets import AssetBaseCfg
 
 CLASS_TAG = "class"
 
@@ -45,7 +44,6 @@ class USDMesh(AssetMesh):
         """
         logger.debug("Creating USD mesh cfg")
         mesh_cfg = UsdFileCfg(usd_path=self.usd_path, scale=self.scale)
-        mesh_cfg.usd_path = self.usd_path
         return mesh_cfg
 
 
