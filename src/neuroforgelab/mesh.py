@@ -13,6 +13,12 @@ from pxr.Usd import Prim  # type: ignore
 from isaaclab.sim.converters import MeshConverterCfg, MeshConverter
 from isaaclab.sim.spawners import UsdFileCfg, SpawnerCfg
 from isaaclab.terrains.utils import create_prim_from_mesh
+from isaaclab.sim.schemas import CollisionPropertiesCfg
+from isaaclab.sim.spawners import (
+    RigidBodyMaterialCfg,
+    VisualMaterialCfg,
+    PreviewSurfaceCfg,
+)
 
 CLASS_TAG = "class"
 
@@ -60,8 +66,7 @@ class UniversalMesh(AssetMesh):
         Returns:
             SpawnerCfg: The IsaacLab cfg object
         """
-        mesh_cfg = UsdFileCfg()
-        mesh_cfg.usd_path = self.converter.usd_path
+        mesh_cfg = UsdFileCfg(usd_path=self.converter.usd_path)
         return mesh_cfg
 
 
@@ -80,6 +85,8 @@ def apply_semantics(prim: Prim, type: str, value: str) -> None:
 class DynamicMesh(AssetMesh):
 
     mesh: Trimesh
+    visual_material: VisualMaterialCfg = PreviewSurfaceCfg()
+    physics_material: RigidBodyMaterialCfg = RigidBodyMaterialCfg()
 
     # inspiration:
     # https://github.com/isaac-sim/IsaacLab/blob/963b53b96bc6140670fa0fe41d9fbafa68d8382f/source/isaaclab/isaaclab/terrains/utils.py#L61
@@ -91,8 +98,8 @@ class DynamicMesh(AssetMesh):
             create_prim_from_mesh(
                 prim,
                 self.mesh,
-                # visual_material=cfg.visual_material,
-                # physics_material=cfg.physics_material,
+                visual_material=self.visual_material,
+                physics_material=self.physics_material,
                 *args,
                 **kwargs,
             )

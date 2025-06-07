@@ -4,7 +4,7 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 from isaaclab.terrains import SubTerrainBaseCfg, TerrainGeneratorCfg
-from isaaclab.assets import AssetBaseCfg
+from isaaclab.assets import AssetBaseCfg, RigidObjectCfg
 
 from trimesh import Trimesh
 import numpy as np
@@ -47,7 +47,7 @@ class TerrainInstance:
         return terrain_cfg
 
     def to_asset_cfg(self, scene_name: str) -> list[AssetBaseCfg]:
-        """Create a AssetBaseCfg object from a TerrainInstance object
+        """Create a asset Cfg object from a TerrainInstance object
 
         Args:
             prim_path (str): The prim path to use for the terrain
@@ -66,7 +66,5 @@ class TerrainInstance:
             )
             cfg.init_state = cfg.InitialStateCfg()
             cfg.collision_group = -1
-            res.append(
-                cfg
-            )
+            res.append(cfg)
         return res

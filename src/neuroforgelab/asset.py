@@ -4,7 +4,7 @@ from logging import getLogger
 
 logger = getLogger(__name__)
 
-from isaaclab.assets import AssetBaseCfg
+from isaaclab.assets import AssetBaseCfg, RigidObjectCfg
 from isaaclab.sim.spawners.lights import DistantLightCfg
 
 
@@ -19,6 +19,9 @@ class AssetSpec(ABC):
     assets"""
 
     name: str
+    """The name of the asset. For example, "Tree" or "Rock"."""
+    asset_cfg_class: type[AssetBaseCfg] = AssetBaseCfg
+    """The configuration class for the asset."""
 
     @abstractmethod
     def generate(
@@ -48,7 +51,6 @@ class AssetSpec(ABC):
         Args:
             name (str): The name of the asset instance
             asset (AssetMesh): The mesh of the asset instance
-            usd_path: Path to an USD file, from which the asset mesh originates
             position (tuple[float, float, float]): The position of the asset instance
             rotation (tuple[float, float, float, float]): The rotation of the asset instance
             tags (dict[str, str], optional): Additional tags to add to the asset instance. Defaults to None.
@@ -58,7 +60,15 @@ class AssetSpec(ABC):
         """
         if tags is None:
             tags = {}
-        return AssetInstance(self, asset, name, position, rotation, tags)
+        return AssetInstance(
+            self,
+            asset,
+            name,
+            position,
+            rotation,
+            tags,
+            asset_cfg_class=self.asset_cfg_class,
+        )
 
 
 class IdenticalAssetSpec(AssetSpec):
@@ -68,16 +78,19 @@ class IdenticalAssetSpec(AssetSpec):
     the generation step, and only requires the asset to be loaded once.
     """
 
-    usd_path: str
-
-    def __init__(self, name: str, mesh: AssetMesh):
+    def __init__(
+        self,
+        name: str,
+        mesh: AssetMesh,
+        asset_class: type[AssetBaseCfg] = AssetBaseCfg,
+    ):
         """Create a new IdenticalAssetSpec object
 
         Args:
             name (str): The name of the asset
             mesh (AssetMesh): The mesh of the asset
         """
-        super().__init__(name)
+        super().__init__(name, asset_class)
         self.mesh = mesh
 
     @abstractmethod
@@ -169,6 +182,7 @@ class AssetInstance(SceneAsset):
     position: tuple[float, float, float]
     rotation: tuple[float, float, float, float]
     additional_tags: dict[str, str]
+    asset_cfg_class: type[AssetBaseCfg]
 
     def to_cfg(self, scene_name: str = "World") -> AssetBaseCfg:
         """Create a RigidObjectCfg object from an AssetInstance object
@@ -185,7 +199,7 @@ class AssetInstance(SceneAsset):
         else:
             prim_path = f"/{scene_name}/{self.asset_class.name}/{self.name}"
 
-        obj = AssetBaseCfg(prim_path=prim_path)
+        obj = self.asset_cfg_class(prim_path=prim_path)
 
         spawner = self.mesh.to_cfg()
 

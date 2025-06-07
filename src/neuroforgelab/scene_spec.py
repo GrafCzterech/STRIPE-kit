@@ -21,9 +21,7 @@ def spawn_cfg(cfg: AssetBaseCfg) -> None:
     if cfg.spawn is not None:
         cfg.spawn.func(cfg.prim_path, cfg.spawn)
     else:
-        raise ValueError(
-            f"Spawn function not set for {cfg.__class__.__name__} asset"
-        )
+        raise ValueError(f"Spawn function not set for {cfg.__class__.__name__} asset")
 
 
 @dataclass

@@ -14,5 +14,5 @@ __all__ = [
     "AssetMesh",
     "DynamicMesh",
     "USDMesh",
-    "UniversalMesh"
+    "UniversalMesh",
 ]

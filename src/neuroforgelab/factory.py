@@ -88,9 +88,7 @@ class SceneCfgFactory:
         if self.robot is not None:
             if isinstance(self.robot, AssetBaseCfg):
                 robot_cfg = self.robot
-                robot_cfg.prim_path = (
-                    f"/{self.name}/{self.robot_name}"
-                )
+                robot_cfg.prim_path = f"/{self.name}/{self.robot_name}"
             else:
                 robot_cfg = self.robot.to_cfg(self.name)
             setattr(
