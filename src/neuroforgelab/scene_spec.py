@@ -21,7 +21,9 @@ def spawn_cfg(cfg: AssetBaseCfg) -> None:
     if cfg.spawn is not None:
         cfg.spawn.func(cfg.prim_path, cfg.spawn)
     else:
-        raise ValueError(f"Spawn function not set for {cfg.__class__.__name__} asset")
+        raise ValueError(
+            f"Spawn function not set for {cfg.__class__.__name__} asset"
+        )
 
 
 @dataclass
@@ -29,9 +31,13 @@ class SceneSpec(ABC):
     """A specification for a scene to be generated"""
 
     size: tuple[float, float]
+    """The size of the scene"""
     palette: list[AssetSpec]
+    """The palette of asset classes to be used in the scene"""
     robot: AssetBaseCfg | None = None
+    """The robot asset to be used in the scene"""
     light: LightSpec = LightSpec()
+    """The light specification for the scene"""
 
     def add_asset(self, asset: AssetSpec):
         """Add an asset to the scene palette

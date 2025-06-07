@@ -24,7 +24,7 @@ CLASS_TAG = "class"
 
 
 class AssetMesh(ABC):
-    """A mesh asset that can be converted to a USD file"""
+    """A mesh that can be spawned within Isaac Sim"""
 
     @abstractmethod
     def to_cfg(self) -> SpawnerCfg:
@@ -38,12 +38,13 @@ class AssetMesh(ABC):
 
 @dataclass
 class USDMesh(AssetMesh):
+    """A mesh derived from a USD file"""
 
     usd_path: str
     scale: tuple[float, float, float] = (1.0, 1.0, 1.0)
 
     def to_cfg(self) -> UsdFileCfg:
-        """Create a MeshConverterCfg object from an AssetMesh object
+        """Create a UsdFileCfg object from an AssetMesh object
 
         Returns:
             UsdFileCfg: The IsaacLab cfg object
@@ -54,17 +55,24 @@ class USDMesh(AssetMesh):
 
 
 class UniversalMesh(AssetMesh):
+    """A mesh derived from any file format, accepted by MeshConverterCfg"""
 
     def __init__(self, path: str, **kwargs):
+        """Initialize a UniversalMesh object
+
+        Args:
+            path (str): Path to the mesh file
+            kwargs: Additional keyword arguments to pass to the MeshConverterCfg
+        """
         logger.debug("Creating universal mesh")
         cfg = MeshConverterCfg(path, **kwargs)
         self.converter = MeshConverter(cfg)
 
     def to_cfg(self) -> UsdFileCfg:
-        """Create a MeshConverterCfg object from an AssetMesh object
+        """Create a UsdFileCfg object utilizing the MeshConverterCfg from an AssetMesh object
 
         Returns:
-            SpawnerCfg: The IsaacLab cfg object
+            UsdFileCfg: The IsaacLab cfg object
         """
         mesh_cfg = UsdFileCfg(usd_path=self.converter.usd_path)
         return mesh_cfg
@@ -83,15 +91,24 @@ def apply_semantics(prim: Prim, type: str, value: str) -> None:
 
 @dataclass
 class DynamicMesh(AssetMesh):
+    """A dynamic mesh asset defined by a Trimesh object"""
 
     mesh: Trimesh
+    """The Trimesh object that defines the mesh"""
     visual_material: VisualMaterialCfg = PreviewSurfaceCfg()
+    """The visual material configuration for the mesh"""
     physics_material: RigidBodyMaterialCfg = RigidBodyMaterialCfg()
+    """The physics material configuration for the mesh"""
 
     # inspiration:
     # https://github.com/isaac-sim/IsaacLab/blob/963b53b96bc6140670fa0fe41d9fbafa68d8382f/source/isaaclab/isaaclab/terrains/utils.py#L61
 
     def to_cfg(self) -> SpawnerCfg:
+        """Converts the dynamic mesh to a SpawnerCfg object
+
+        Returns:
+            SpawnerCfg: A SpawnerCfg object representing the dynamic mesh
+        """
         logger.debug("Creating dynamic mesh cfg")
 
         def func_wrapper(prim: str, cfg: SpawnerCfg, *args, **kwargs):

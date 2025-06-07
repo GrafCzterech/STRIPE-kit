@@ -10,7 +10,7 @@ from .terrain import TerrainInstance, TERRAIN_NAME
 
 
 class SceneCfgFactory:
-    """A factory class for creating InteractiveSceneCfg objects from TerrainSpec and AssetSpec objects"""
+    """A factory class for creating InteractiveSceneCfg objects from TerrainInstance and SceneAsset objects"""
 
     robot_name: str = "robot"
 
@@ -61,7 +61,11 @@ class SceneCfgFactory:
         num_envs: int = 1,
         env_spacing: float = 0.0,
     ) -> InteractiveSceneCfg:
-        """Create a new InteractiveSceneCfg object from the TerrainSpec and AssetSpec objects
+        """Create a new InteractiveSceneCfg object from the TerrainInstance and SceneAsset objects
+
+        Args:
+            num_envs (int): The number of environments to create
+            env_spacing (float): The spacing between environments
 
         Returns:
             InteractiveSceneCfg: The InteractiveSceneCfg object

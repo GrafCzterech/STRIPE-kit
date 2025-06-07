@@ -14,9 +14,9 @@ from .mesh import AssetMesh, CLASS_TAG
 
 @dataclass
 class AssetSpec(ABC):
-    """A specification for an asset to be placed in a scene. We know nothing
-    about the asset, beyond that it has a name. This is a base class for all
-    assets"""
+    """A specification for a class of assets to be placed in a scene.
+    SceneSpec class uses this to generate AssetInstance objects to be placed on the terrain.
+    """
 
     name: str
     """The name of the asset. For example, "Tree" or "Rock"."""
@@ -72,32 +72,32 @@ class AssetSpec(ABC):
 
 
 class IdenticalAssetSpec(AssetSpec):
-    """A specification for an asset that is identical to the original asset.
-    The ideal use case for this class, is when you have a single asset, like a
-    street lamp, and you want to place it in multiple locations. This simplifies
-    the generation step, and only requires the asset to be loaded once.
-    """
+    """A specification for an asset class, that will be identical across all instances"""
 
     def __init__(
         self,
         name: str,
         mesh: AssetMesh,
-        asset_class: type[AssetBaseCfg] = AssetBaseCfg,
+        asset_cfg_class: type[AssetBaseCfg] = AssetBaseCfg,
+        rotation: tuple[float, float, float, float] = (0, 0, 0, 1),
     ):
         """Create a new IdenticalAssetSpec object
 
         Args:
             name (str): The name of the asset
             mesh (AssetMesh): The mesh of the asset
+            asset_cfg_class (type[AssetBaseCfg], optional): The configuration class for the asset. Defaults to AssetBaseCfg.
         """
-        super().__init__(name, asset_class)
+        super().__init__(name, asset_cfg_class)
         self.mesh = mesh
+        self.rotation = rotation
 
     @abstractmethod
     def find_positions(
         self, terrain: TerrainInstance
     ) -> list[tuple[float, float, float]]:
-        """Find positions to place the asset on the terrain
+        """Find positions to place the asset on the terrain.
+        This is essentially a devolved generate() that returns a list of positions instead of creating instances.
 
         Args:
             terrain (TerrainInstance): The terrain to place the asset on
@@ -120,7 +120,7 @@ class IdenticalAssetSpec(AssetSpec):
             self.create_instance(
                 f"{self.name}_{i}",
                 position,
-                (0, 0, 0, 1),
+                self.rotation,
             )
             for i, position in enumerate(self.find_positions(terrain))
         ]
@@ -138,6 +138,7 @@ class IdenticalAssetSpec(AssetSpec):
             name (str): The name of the asset instance
             position (tuple[float, float, float]): The position of the asset instance
             rotation (tuple[float, float, float, float]): The rotation of the asset instance
+            tags (dict[str, str] | None, optional): The tags to assign to the asset instance. Defaults to None.
 
         Returns:
             AssetInstance: The AssetInstance object
@@ -177,21 +178,29 @@ class AssetInstance(SceneAsset):
     """A specification for an asset to be placed in a scene"""
 
     asset_class: AssetSpec | None
+    """The class of the asset"""
     mesh: AssetMesh
+    """The mesh of the asset"""
     name: str
+    """The name of the asset"""
     position: tuple[float, float, float]
+    """The position of the asset"""
     rotation: tuple[float, float, float, float]
+    """The rotation of the asset"""
     additional_tags: dict[str, str]
-    asset_cfg_class: type[AssetBaseCfg]
+    """Additional tags for the asset"""
+    asset_cfg_class: type[AssetBaseCfg] = AssetBaseCfg
+    """The configuration class for the asset"""
 
     def to_cfg(self, scene_name: str = "World") -> AssetBaseCfg:
-        """Create a RigidObjectCfg object from an AssetInstance object
+        """Create a config class object from an AssetInstance object.
+        The returned type is determined by the asset_cfg_class attribute.
 
         Args:
             scene_name (str, optional): The name of the scene to place the asset into. Defaults to "World".
 
         Returns:
-            AssetBaseCfg: The IsaacLab cfg object
+            asset_cfg_class: The IsaacLab cfg object
         """
 
         if self.asset_class is None:
@@ -230,6 +239,7 @@ class AssetInstance(SceneAsset):
 
 @dataclass
 class LightSpec(SceneAsset):
+    """A scene light"""
 
     exposure: float = 11.0
     intensity: float = 7.0

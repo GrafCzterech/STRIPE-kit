@@ -29,6 +29,8 @@ class TerrainInstance:
     def to_cfg(self) -> TerrainGeneratorCfg:
         """Create a TerrainGeneratorCfg object from a TerrainInstance object
 
+        Please note that this method does not apply semantic tags to the terrain.
+
         Returns:
             TerrainGeneratorCfg: The TerrainGeneratorCfg object
         """
