@@ -4,7 +4,7 @@ from logging import getLogger
 
 logger = getLogger(__name__)
 
-from isaaclab.assets import AssetBaseCfg, RigidObjectCfg
+from isaaclab.assets import AssetBaseCfg
 from isaaclab.sim.spawners.lights import DistantLightCfg
 
 
@@ -152,11 +152,8 @@ class SceneAsset(ABC):
     """A scene asset that can be placed in a scene"""
 
     @abstractmethod
-    def to_cfg(self, scene_name: str = "World") -> AssetBaseCfg:
+    def to_cfg(self) -> AssetBaseCfg:
         """Create a RigidObjectCfg object from an AssetInstance object
-
-        Args:
-            scene_name (str, optional): The name of the scene to place the asset into. Defaults to "World".
 
         Returns:
             AssetBaseCfg: The IsaacLab cfg object
@@ -192,7 +189,7 @@ class AssetInstance(SceneAsset):
     asset_cfg_class: type[AssetBaseCfg] = AssetBaseCfg
     """The configuration class for the asset"""
 
-    def to_cfg(self, scene_name: str = "World") -> AssetBaseCfg:
+    def to_cfg(self) -> AssetBaseCfg:
         """Create a config class object from an AssetInstance object.
         The returned type is determined by the asset_cfg_class attribute.
 
@@ -204,9 +201,9 @@ class AssetInstance(SceneAsset):
         """
 
         if self.asset_class is None:
-            prim_path = f"/{scene_name}/{self.name}"
+            prim_path = f"/{self.name}"
         else:
-            prim_path = f"/{scene_name}/{self.asset_class.name}/{self.name}"
+            prim_path = f"/{self.asset_class.name}/{self.name}"
 
         obj = self.asset_cfg_class(prim_path=prim_path)
 

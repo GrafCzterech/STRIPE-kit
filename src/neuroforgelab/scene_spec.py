@@ -5,12 +5,7 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 from isaaclab.assets import AssetBaseCfg
-from isaaclab.managers import EventTermCfg
-from isaaclab.sim import SimulationContext
-from isaaclab.envs import ManagerBasedRLEnv
-
-# https://docs.isaacsim.omniverse.nvidia.com/4.5.0/py/source/extensions/isaacsim.core.utils/docs/index.html#module-isaacsim.core.utils.stage
-import isaacsim.core.utils.stage as stage_utils  # type: ignore
+from isaaclab.sensors import SensorBaseCfg
 
 from .asset import AssetSpec, LightSpec
 from .terrain import TerrainInstance
@@ -36,6 +31,7 @@ class SceneSpec(ABC):
     """The palette of asset classes to be used in the scene"""
     robot: AssetBaseCfg | None = None
     """The robot asset to be used in the scene"""
+    sensors: dict[str, SensorBaseCfg] | None = None
     light: LightSpec = LightSpec()
     """The light specification for the scene"""
 
@@ -74,7 +70,7 @@ class SceneSpec(ABC):
         """
         logger.debug("Generating terrain")
         terrain = self.generate()
-        factory = SceneCfgFactory(terrain, self.robot)
+        factory = SceneCfgFactory(terrain, self.robot, self.sensors)
         for asset in self.palette:
             logger.debug(f"Generating asset {asset.name}")
             children = asset.generate(terrain)

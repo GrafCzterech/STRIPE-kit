@@ -3,9 +3,11 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 # isaaclab imports
+from isaaclab.assets import AssetBaseCfg
 from isaaclab.scene import InteractiveSceneCfg
+from isaaclab.sensors import SensorBaseCfg
 
-from .asset import SceneAsset, AssetBaseCfg
+from .asset import SceneAsset
 from .terrain import TerrainInstance, TERRAIN_NAME
 
 
@@ -18,7 +20,7 @@ class SceneCfgFactory:
         self,
         terrain: TerrainInstance,
         robot: AssetBaseCfg | None = None,
-        name: str = "World",
+        sensors: dict[str, SensorBaseCfg] | None = None,
     ):
         """Create a new SceneCfgFactory object
 
@@ -28,8 +30,8 @@ class SceneCfgFactory:
         self.terrain = terrain
         self.assets: list[SceneAsset] = []
         self.names = set()
-        self.name = name
         self.robot = robot
+        self.sensors = sensors
 
     def set_terrain_spec(self, spec: TerrainInstance) -> None:
         """Set the TerrainInstance object to use
@@ -75,7 +77,7 @@ class SceneCfgFactory:
         # this is ever so slightly more performant, that creating a new dynamic class(an object) then an instance of that class (yet another object)
         cfg = InteractiveSceneCfg()
 
-        for i, asset in enumerate(self.terrain.to_asset_cfg(self.name)):
+        for i, asset in enumerate(self.terrain.to_asset_cfg()):
             setattr(
                 cfg,
                 TERRAIN_NAME + f"_{i}",
@@ -86,20 +88,28 @@ class SceneCfgFactory:
             setattr(
                 cfg,
                 asset.get_name(),
-                asset.to_cfg(self.name),
+                asset.to_cfg(),
             )
 
         if self.robot is not None:
             if isinstance(self.robot, AssetBaseCfg):
                 robot_cfg = self.robot
-                robot_cfg.prim_path = f"/{self.name}/{self.robot_name}"
+                robot_cfg.prim_path = "{ENV_REGEX_NS}" + f"/{self.robot_name}"
             else:
-                robot_cfg = self.robot.to_cfg(self.name)
+                robot_cfg = self.robot.to_cfg()
             setattr(
                 cfg,
                 self.robot_name,
                 robot_cfg,
             )
+
+        if self.sensors is not None:
+            for name, sensor in self.sensors.items():
+                setattr(
+                    cfg,
+                    name,
+                    sensor,
+                )
 
         setattr(cfg, "num_envs", num_envs)
         setattr(cfg, "env_spacing", env_spacing)

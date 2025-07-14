@@ -13,7 +13,6 @@ from pxr.Usd import Prim  # type: ignore
 from isaaclab.sim.converters import MeshConverterCfg, MeshConverter
 from isaaclab.sim.spawners import UsdFileCfg, SpawnerCfg
 from isaaclab.terrains.utils import create_prim_from_mesh
-from isaaclab.sim.schemas import CollisionPropertiesCfg
 from isaaclab.sim.spawners import (
     RigidBodyMaterialCfg,
     VisualMaterialCfg,
