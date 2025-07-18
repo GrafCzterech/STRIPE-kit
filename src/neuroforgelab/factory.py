@@ -11,17 +11,17 @@ from .asset import SceneAsset
 from .terrain import TerrainInstance, TERRAIN_NAME
 
 
+class NFLInteractiveSceneCfg(InteractiveSceneCfg):
+
+    pass
+
+
 class SceneCfgFactory:
     """A factory class for creating InteractiveSceneCfg objects from TerrainInstance and SceneAsset objects"""
 
     robot_name: str = "robot"
 
-    def __init__(
-        self,
-        terrain: TerrainInstance,
-        robot: AssetBaseCfg | None = None,
-        sensors: dict[str, SensorBaseCfg] | None = None,
-    ):
+    def __init__(self, terrain: TerrainInstance):
         """Create a new SceneCfgFactory object
 
         Args:
@@ -30,8 +30,6 @@ class SceneCfgFactory:
         self.terrain = terrain
         self.assets: list[SceneAsset] = []
         self.names = set()
-        self.robot = robot
-        self.sensors = sensors
 
     def set_terrain_spec(self, spec: TerrainInstance) -> None:
         """Set the TerrainInstance object to use
@@ -60,14 +58,20 @@ class SceneCfgFactory:
 
     def new_scene(
         self,
+        robot: AssetBaseCfg | None = None,
+        sensors: dict[str, SensorBaseCfg] | None = None,
         num_envs: int = 1,
         env_spacing: float = 0.0,
-    ) -> InteractiveSceneCfg:
+        **kwargs,
+    ) -> NFLInteractiveSceneCfg:
         """Create a new InteractiveSceneCfg object from the TerrainInstance and SceneAsset objects
 
         Args:
+            robot (AssetBaseCfg | None): The robot asset configuration
+            sensors (dict[str, SensorBaseCfg] | None): The sensor configurations
             num_envs (int): The number of environments to create
             env_spacing (float): The spacing between environments
+            kwargs: Additional keyword arguments to pass to the InteractiveSceneCfg constructor
 
         Returns:
             InteractiveSceneCfg: The InteractiveSceneCfg object
@@ -75,7 +79,7 @@ class SceneCfgFactory:
         logger.debug("Creating scene cfg")
 
         # this is ever so slightly more performant, that creating a new dynamic class(an object) then an instance of that class (yet another object)
-        cfg = InteractiveSceneCfg()
+        cfg = NFLInteractiveSceneCfg(num_envs, env_spacing, **kwargs)
 
         for i, asset in enumerate(self.terrain.to_asset_cfg()):
             setattr(
@@ -91,27 +95,12 @@ class SceneCfgFactory:
                 asset.to_cfg(),
             )
 
-        if self.robot is not None:
-            if isinstance(self.robot, AssetBaseCfg):
-                robot_cfg = self.robot
-                robot_cfg.prim_path = "{ENV_REGEX_NS}" + f"/{self.robot_name}"
-            else:
-                robot_cfg = self.robot.to_cfg()
-            setattr(
-                cfg,
-                self.robot_name,
-                robot_cfg,
-            )
+        if robot is not None:
+            setattr(cfg, "robot", robot)
+            robot.prim_path = "{ENV_REGEX_NS}/Robot"
 
-        if self.sensors is not None:
-            for name, sensor in self.sensors.items():
-                setattr(
-                    cfg,
-                    name,
-                    sensor,
-                )
-
-        setattr(cfg, "num_envs", num_envs)
-        setattr(cfg, "env_spacing", env_spacing)
+        if sensors is not None:
+            for name, sensor in sensors.items():
+                setattr(cfg, name, sensor)
 
         return cfg

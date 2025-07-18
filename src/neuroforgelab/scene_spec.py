@@ -5,7 +5,6 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 from isaaclab.assets import AssetBaseCfg
-from isaaclab.sensors import SensorBaseCfg
 
 from .asset import AssetSpec, LightSpec
 from .terrain import TerrainInstance
@@ -29,9 +28,6 @@ class SceneSpec(ABC):
     """The size of the scene"""
     palette: list[AssetSpec]
     """The palette of asset classes to be used in the scene"""
-    robot: AssetBaseCfg | None = None
-    """The robot asset to be used in the scene"""
-    sensors: dict[str, SensorBaseCfg] | None = None
     light: LightSpec = LightSpec()
     """The light specification for the scene"""
 
@@ -70,7 +66,7 @@ class SceneSpec(ABC):
         """
         logger.debug("Generating terrain")
         terrain = self.generate()
-        factory = SceneCfgFactory(terrain, self.robot, self.sensors)
+        factory = SceneCfgFactory(terrain)
         for asset in self.palette:
             logger.debug(f"Generating asset {asset.name}")
             children = asset.generate(terrain)
