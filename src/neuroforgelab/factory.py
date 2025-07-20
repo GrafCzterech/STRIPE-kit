@@ -97,7 +97,8 @@ class SceneCfgFactory:
 
         if robot is not None:
             setattr(cfg, "robot", robot)
-            robot.prim_path = "{ENV_REGEX_NS}/Robot"
+            robot.prim_path = "{ENV_REGEX_NS}/robot"
+            robot.init_state.pos = self.terrain.origin
 
         if sensors is not None:
             for name, sensor in sensors.items():

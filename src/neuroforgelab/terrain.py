@@ -20,7 +20,6 @@ class TerrainInstance:
 
     mesh: list[tuple[Trimesh, list[tuple[str, str]]]]
     """The mesh of the terrain and the tags to add to the mesh"""
-    # slight performance hickup, as this form of data init causes a new object allocation, but this is more readable
     origin: tuple[float, float, float]
     """The position where the robot should spawn"""
     size: tuple[float, float]
