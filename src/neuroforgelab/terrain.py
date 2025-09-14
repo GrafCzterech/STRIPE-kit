@@ -5,6 +5,7 @@ logger = getLogger(__name__)
 
 from isaaclab.terrains import SubTerrainBaseCfg, TerrainGeneratorCfg
 from isaaclab.assets import AssetBaseCfg
+from isaaclab.sim.spawners import PreviewSurfaceCfg
 
 from trimesh import Trimesh
 import numpy as np
@@ -24,6 +25,8 @@ class TerrainInstance:
     """The position where the robot should spawn"""
     size: tuple[float, float]
     """The size of the terrain in meters"""
+    color: tuple[float, float, float]
+    """The color of the terrain"""
 
     def to_cfg(self) -> TerrainGeneratorCfg:
         """Create a TerrainGeneratorCfg object from a TerrainInstance object
@@ -56,7 +59,7 @@ class TerrainInstance:
         logger.debug("Creating terrain asset cfg")
         res = []
         for i, (mesh, tags) in enumerate(self.mesh):
-            spawner = DynamicMesh(mesh).to_cfg()
+            spawner = DynamicMesh(mesh, PreviewSurfaceCfg(diffuse_color=self.color)).to_cfg()
             spawner.semantic_tags = tags
             cfg = AssetBaseCfg(
                 prim_path=f"/{TERRAIN_NAME}/{TERRAIN_NAME}_{i}",

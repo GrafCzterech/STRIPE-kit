@@ -26,8 +26,11 @@ class AssetMesh(ABC):
     """A mesh that can be spawned within Isaac Sim"""
 
     @abstractmethod
-    def to_cfg(self) -> SpawnerCfg:
+    def to_cfg(self, **kwargs) -> SpawnerCfg:
         """Create a SpawnerCfg object from an AssetMesh object
+
+        Args:
+            **kwargs: Additional keyword arguments, passed to the SpawnerCfg constructor
 
         Returns:
             SpawnerCfg: The IsaacLab cfg object
@@ -40,16 +43,18 @@ class USDMesh(AssetMesh):
     """A mesh derived from a USD file"""
 
     usd_path: str
-    scale: tuple[float, float, float] = (1.0, 1.0, 1.0)
 
-    def to_cfg(self) -> UsdFileCfg:
+    def to_cfg(self, **kwargs) -> UsdFileCfg:
         """Create a UsdFileCfg object from an AssetMesh object
+
+        Args:
+            **kwargs: Additional keyword arguments, passed to the UsdFileCfg constructor
 
         Returns:
             UsdFileCfg: The IsaacLab cfg object
         """
         logger.debug("Creating USD mesh cfg")
-        mesh_cfg = UsdFileCfg(usd_path=self.usd_path, scale=self.scale)
+        mesh_cfg = UsdFileCfg(usd_path=self.usd_path, **kwargs)
         return mesh_cfg
 
 
@@ -67,13 +72,16 @@ class UniversalMesh(AssetMesh):
         cfg = MeshConverterCfg(path, **kwargs)
         self.converter = MeshConverter(cfg)
 
-    def to_cfg(self) -> UsdFileCfg:
+    def to_cfg(self, **kwargs) -> UsdFileCfg:
         """Create a UsdFileCfg object utilizing the MeshConverterCfg from an AssetMesh object
+
+        Args:
+            **kwargs: Additional keyword arguments, passed to the UsdFileCfg constructor
 
         Returns:
             UsdFileCfg: The IsaacLab cfg object
         """
-        mesh_cfg = UsdFileCfg(usd_path=self.converter.usd_path)
+        mesh_cfg = UsdFileCfg(usd_path=self.converter.usd_path, **kwargs)
         return mesh_cfg
 
 
@@ -102,8 +110,11 @@ class DynamicMesh(AssetMesh):
     # inspiration:
     # https://github.com/isaac-sim/IsaacLab/blob/963b53b96bc6140670fa0fe41d9fbafa68d8382f/source/isaaclab/isaaclab/terrains/utils.py#L61
 
-    def to_cfg(self) -> SpawnerCfg:
+    def to_cfg(self, **kwargs) -> SpawnerCfg:
         """Converts the dynamic mesh to a SpawnerCfg object
+
+        Args:
+            **kwargs: Additional keyword arguments, passed to the SpawnerCfg constructor
 
         Returns:
             SpawnerCfg: A SpawnerCfg object representing the dynamic mesh
@@ -125,4 +136,4 @@ class DynamicMesh(AssetMesh):
                     apply_semantics(p, tag, value)
             return p
 
-        return SpawnerCfg(func=func_wrapper)
+        return SpawnerCfg(func=func_wrapper, **kwargs)

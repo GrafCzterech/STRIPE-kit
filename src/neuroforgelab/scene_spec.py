@@ -54,19 +54,24 @@ class SceneSpec(ABC):
         """
         ...
 
-    def create_instance(self) -> SceneCfgFactory:
+    def create_instance(self, num_envs: int = 1, env_spacing: float = 0.0, **kwargs) -> SceneCfgFactory:
         """Create a SceneCfgFactory object from the SceneSpec object.
 
         The default implementation, generates the terrain using the generate
         method, and then generates the assets using the asset specifications
         in the palette. The generated scene is then returned.
 
+        Args:
+            num_envs (int): The number of environments to generate
+            env_spacing (float): The spacing between environments
+            **kwargs: Additional keyword arguments to pass to the SceneCfgFactory
+
         Returns:
             SceneCfgFactory: The SceneCfgFactory object
         """
         logger.debug("Generating terrain")
         terrain = self.generate()
-        factory = SceneCfgFactory(terrain)
+        factory = SceneCfgFactory(terrain, num_envs, env_spacing, **kwargs)
         for asset in self.palette:
             logger.debug(f"Generating asset {asset.name}")
             children = asset.generate(terrain)

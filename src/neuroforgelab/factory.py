@@ -1,4 +1,5 @@
 from logging import getLogger
+from copy import copy, deepcopy
 
 logger = getLogger(__name__)
 
@@ -21,23 +22,16 @@ class SceneCfgFactory:
 
     robot_name: str = "robot"
 
-    def __init__(self, terrain: TerrainInstance):
+    def __init__(self, terrain: TerrainInstance, num_envs: int = 1, env_spacing: float = 0.0, **kwargs):
         """Create a new SceneCfgFactory object
 
         Args:
-            terrain (TerrainInstance): The terrain to use
+            num_envs (int): The number of environments to create
+            env_spacing (float): The spacing between environments
         """
-        self.terrain = terrain
-        self.assets: list[SceneAsset] = []
+        self.cfg = NFLInteractiveSceneCfg(num_envs, env_spacing, **kwargs)
         self.names = set()
-
-    def set_terrain_spec(self, spec: TerrainInstance) -> None:
-        """Set the TerrainInstance object to use
-
-        Args:
-            spec (TerrainInstance): The TerrainInstance object to use
-        """
-        self.terrain = spec
+        self.terrain = terrain
 
     def add_asset(self, asset: SceneAsset) -> None:
         """Add an AssetInstance object to the factory
@@ -52,56 +46,55 @@ class SceneCfgFactory:
             raise ValueError(
                 f"Asset with name {asset.get_name()} already exists"
             )
-        self.assets.append(asset)
+
+        setattr(
+            self.cfg,
+            asset.get_name(),
+            asset.to_cfg(),
+        )
+
         self.names.add(asset.get_name())
         logger.debug(f"Added asset {asset.get_name()}")
 
-    def new_scene(
-        self,
-        robot: AssetBaseCfg | None = None,
-        sensors: dict[str, SensorBaseCfg] | None = None,
-        num_envs: int = 1,
-        env_spacing: float = 0.0,
-        **kwargs,
-    ) -> NFLInteractiveSceneCfg:
-        """Create a new InteractiveSceneCfg object from the TerrainInstance and SceneAsset objects
+    def set_robot(self, robot: AssetBaseCfg) -> None:
+        """Set the robot asset configuration
 
         Args:
-            robot (AssetBaseCfg | None): The robot asset configuration
-            sensors (dict[str, SensorBaseCfg] | None): The sensor configurations
-            num_envs (int): The number of environments to create
-            env_spacing (float): The spacing between environments
-            kwargs: Additional keyword arguments to pass to the InteractiveSceneCfg constructor
+            robot (AssetBaseCfg): The robot asset configuration
+        """
+        robot = deepcopy(robot)
+        setattr(self.cfg, "robot", robot)
+        robot.prim_path = "{ENV_REGEX_NS}/robot"
+        robot.init_state.pos = self.terrain.origin
+
+    def add_sensor(self, name: str, sensor: SensorBaseCfg) -> None:
+        """Add sensors to the scene
+
+        Args:
+            name (str): The name of the sensor
+            sensor (SensorBaseCfg): The sensor configuration
+        """
+        setattr(self.cfg, name, sensor)
+
+    def get_scene(
+        self,
+        **kwargs,
+    ) -> NFLInteractiveSceneCfg:
+        """Gets the scene configuration
+
+        Args:
+            **kwargs: Additional keyword arguments to pass to the terrain asset configuration
 
         Returns:
-            InteractiveSceneCfg: The InteractiveSceneCfg object
+            NFLInteractiveSceneCfg: Shallow copy of the NFLInteractiveSceneCfg object
         """
         logger.debug("Creating scene cfg")
 
-        # this is ever so slightly more performant, that creating a new dynamic class(an object) then an instance of that class (yet another object)
-        cfg = NFLInteractiveSceneCfg(num_envs, env_spacing, **kwargs)
-
-        for i, asset in enumerate(self.terrain.to_asset_cfg()):
+        for i, asset in enumerate(self.terrain.to_asset_cfg(**kwargs)):
             setattr(
-                cfg,
+                self.cfg,
                 TERRAIN_NAME + f"_{i}",
                 asset,
             )
 
-        for asset in self.assets:
-            setattr(
-                cfg,
-                asset.get_name(),
-                asset.to_cfg(),
-            )
-
-        if robot is not None:
-            setattr(cfg, "robot", robot)
-            robot.prim_path = "{ENV_REGEX_NS}/robot"
-            robot.init_state.pos = self.terrain.origin
-
-        if sensors is not None:
-            for name, sensor in sensors.items():
-                setattr(cfg, name, sensor)
-
-        return cfg
+        return copy(self.cfg)
