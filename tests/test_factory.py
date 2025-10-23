@@ -19,7 +19,11 @@ class TestFactory(unittest.TestCase):
         from neuroforgelab import SceneCfgFactory, TerrainInstance
 
         terrain = TerrainInstance(
-            mesh=[Trimesh(vertices=np.array([[0, 0, 0]]), faces=np.array([[0, 0, 0]]))],
+            mesh=[
+                Trimesh(
+                    vertices=np.array([[0, 0, 0]]), faces=np.array([[0, 0, 0]])
+                )
+            ],
             origin=np.array([0, 0, 0]),
             size=(1, 1),
         )

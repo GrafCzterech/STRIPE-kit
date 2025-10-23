@@ -8,6 +8,7 @@ from .terrain import TerrainInstance
 from .scene_spec import SceneSpec
 from .factory import SceneCfgFactory
 from .mesh import AssetMesh, DynamicMesh, USDMesh, UniversalMesh
+from .env import TrainingSpec
 
 __all__ = [
     "SceneCfgFactory",
@@ -20,4 +21,5 @@ __all__ = [
     "DynamicMesh",
     "USDMesh",
     "UniversalMesh",
+    "TrainingSpec",
 ]

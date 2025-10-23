@@ -14,9 +14,24 @@ dependencies = []
 packages = ["neuroforgelab"]
 package-dir = { "" = "src" }
 
+[tool.pyright]
+reportUnusedCallResult = false
+reportAny = false
+reportUnannotatedClassAttribute = false
+reportCallInDefaultInitializer = "hint"
+reportMissingTypeStubs = "hint"
+reportUnknownMemberType = false
+reportUnknownArgumentType = false
+reportExplicitAny = "hint"
+reportUnknownVariableType = "hint"
+reportPrivateLocalImportUsage = "hint"
+
 [project.optional-dependencies]
 dev = ["black"]
 test = ["unittest"]
+
+[project.scripts]
+skrl_train = "neuroforgelab.scripts.train:main"
 
 [project.urls]
 Repository = "https://github.com/GrafCzterech/NeuroForgeLab"

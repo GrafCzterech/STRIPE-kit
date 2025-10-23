@@ -22,7 +22,13 @@ class SceneCfgFactory:
 
     robot_name: str = "robot"
 
-    def __init__(self, terrain: TerrainInstance, num_envs: int = 1, env_spacing: float = 0.0, **kwargs):
+    def __init__(
+        self,
+        terrain: TerrainInstance,
+        num_envs: int = 1,
+        env_spacing: float = 0.0,
+        **kwargs,
+    ):
         """Create a new SceneCfgFactory object
 
         Args:

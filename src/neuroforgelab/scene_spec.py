@@ -54,7 +54,9 @@ class SceneSpec(ABC):
         """
         ...
 
-    def create_instance(self, num_envs: int = 1, env_spacing: float = 0.0, **kwargs) -> SceneCfgFactory:
+    def create_instance(
+        self, num_envs: int = 1, env_spacing: float = 0.0, **kwargs
+    ) -> SceneCfgFactory:
         """Create a SceneCfgFactory object from the SceneSpec object.
 
         The default implementation, generates the terrain using the generate

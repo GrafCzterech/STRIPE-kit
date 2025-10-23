@@ -59,7 +59,9 @@ class TerrainInstance:
         logger.debug("Creating terrain asset cfg")
         res = []
         for i, (mesh, tags) in enumerate(self.mesh):
-            spawner = DynamicMesh(mesh, PreviewSurfaceCfg(diffuse_color=self.color)).to_cfg()
+            spawner = DynamicMesh(
+                mesh, PreviewSurfaceCfg(diffuse_color=self.color)
+            ).to_cfg()
             spawner.semantic_tags = tags
             cfg = AssetBaseCfg(
                 prim_path=f"/{TERRAIN_NAME}/{TERRAIN_NAME}_{i}",
