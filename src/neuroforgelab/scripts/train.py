@@ -22,7 +22,6 @@ from isaaclab.utils.io import dump_pickle, dump_yaml
 
 from isaaclab_rl.skrl import SkrlVecEnvWrapper
 
-import tasks  # noqa: F401
 from isaaclab_tasks.utils.hydra import hydra_task_config
 
 # add argparse arguments
@@ -138,9 +137,7 @@ def main(
     """Train with skrl agent."""
     # override configurations with non-hydra CLI arguments
     env_cfg.scene.num_envs = (
-        args_cli.num_envs
-        if args_cli.num_envs is not None
-        else env_cfg.scene.num_envs
+        args_cli.num_envs if args_cli.num_envs is not None else env_cfg.scene.num_envs
     )
     env_cfg.sim.device = (
         args_cli.device if args_cli.device is not None else env_cfg.sim.device
@@ -157,9 +154,7 @@ def main(
     agent_cfg["trainer"]["close_environment_at_exit"] = False
     # configure the ML framework into the global skrl variable
     if args_cli.ml_framework.startswith("jax"):
-        skrl.config.jax.backend = (
-            "jax" if args_cli.ml_framework == "jax" else "numpy"
-        )
+        skrl.config.jax.backend = "jax" if args_cli.ml_framework == "jax" else "numpy"
 
     # randomly sample a seed if seed = -1
     if args_cli.seed == -1:
