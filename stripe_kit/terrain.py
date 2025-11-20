@@ -19,7 +19,14 @@ TERRAIN_NAME = "terrain"
 
 @dataclass
 class TerrainInstance:
-    """A specification for a terrain to be placed in a scene"""
+    """A specification for a terrain to be placed in a scene.
+
+    Logically, the terrain should cover the entire declared size, meaning
+    holes are allowed, but that implies non-continuous terrain.
+
+    Terrain consists of multiple meshes that are combined to form a single
+    terrain. Each mesh can have specific semantic tags attached to it.
+    """
 
     mesh: list[tuple[Trimesh, list[tuple[str, str]]]]
     """The mesh of the terrain and the tags to add to the mesh"""

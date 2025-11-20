@@ -18,7 +18,12 @@ class NFLInteractiveSceneCfg(InteractiveSceneCfg):
 
 
 class SceneCfgFactory:
-    """A factory class for creating InteractiveSceneCfg objects from TerrainInstance and SceneAsset objects"""
+    """A factory class for creating InteractiveSceneCfg objects from
+    TerrainInstance and SceneAsset objects.
+
+    Logically, this represents a generated scene, that for some reason
+    you might want to alter or create multiple instances of.
+    """
 
     robot_name: str = "robot"
 
@@ -86,9 +91,6 @@ class SceneCfgFactory:
         self,
     ) -> NFLInteractiveSceneCfg:
         """Gets the scene configuration
-
-        Args:
-            **kwargs: Additional keyword arguments to pass to the terrain asset configuration
 
         Returns:
             NFLInteractiveSceneCfg: Shallow copy of the NFLInteractiveSceneCfg object

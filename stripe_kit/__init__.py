@@ -1,15 +1,50 @@
-"""NeuroForgeLab is a wrapper over the various utilities Isaac Lab and Isaac Sim
-provide for defining and managing scenes. Utilizing nfl provided utilities, you
-can easily define a set of rules with which procedurally generated Isaac Lab
-scenes can be created."""
+"""
+STRIPE-kit is a kit of utilities wrapping over various Isaac Lab and Isaac
+Sim utilities. The core idea, is that you define your scene by inheriting and
+utilizing different classes provided here, ideally in a separate module, and
+then after providing the task specification simply register it with gymnasium
+and run your Isaac Lab RL training.
 
-from .asset import AssetSpec, AssetInstance, IdenticalAssetSpec
-from .terrain import TerrainInstance
-from .scene_spec import SceneSpec
-from .factory import SceneCfgFactory
-from .mesh import AssetMesh, DynamicMesh, USDMesh, UniversalMesh
+Usage
+======
+
+1. Create your `SceneSpec`
+    This is where you define how the scene should be generated. Create a new
+    class that inherits from `SceneSpec` and implement the methods as needed.
+2. Define your task
+    This is done via standard Isaac Lab `configclass`es, so you define your
+    reward terms, termination terms, etc...
+3. Couple your task with your scene
+    This is done by creating a new instance of `TrainingSpec`, which takes in
+    a `SceneSpec` and all the necessary parameters for the task.
+4. Register your task with gymnasium
+    `TrainingSpec` can be transformed into a `TaskEnvCfg`, which can be directly
+    registered with gymnasium.
+5. Run your training
+    Once your task is registered, any training script that uses gymnasium works
+    just fine. We actually have a convenient pre-built script for that, which
+    once the package is installed should be accessible via the CLI as
+    `skrl_train`.
+
+Core concepts
+==============
+
+There are a few core concepts you need to understand when working with this
+module.
+
+- Spec: A specification, that defines how something should be generated
+- Scene: An instance of a generated scene
+- Mesh: A 3d mesh (3d model) that can be used in a scene
+- configclass: The preferred Isaac Lab way of creating things, is via creating a subclass or instance of a configclass
+"""
+
+from .asset import AssetInstance, AssetSpec, IdenticalAssetSpec
 from .env import TrainingSpec
+from .factory import SceneCfgFactory
 from .materials import MaterialHandler
+from .mesh import AssetMesh, DynamicMesh, UniversalMesh, USDMesh
+from .scene_spec import SceneSpec
+from .terrain import TerrainInstance
 
 __all__ = [
     "SceneCfgFactory",

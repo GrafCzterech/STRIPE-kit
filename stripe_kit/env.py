@@ -31,6 +31,21 @@ class TaskEnvCfg(ManagerBasedRLEnvCfg):
 
 @dataclass
 class TrainingSpec:
+    """A complete specification for training a robot in a scene.
+
+    Usage
+    ======
+
+    Having defined your scene using a `SceneSpec`, you then have to define your
+    task, by deciding which robot to use, what sensors you need, and your
+    rewards, terminations, commands, etc... Consult the Isaac Lab documentation
+    for more information how to do it properly.
+
+    After creating your `TrainingSpec`, you can create a `ManagerBasedRLEnv`
+    instance using the `to_env_cfg` method. This custom environment is best
+    registered in gymnasium using the `register` method.
+    """
+
     scene: SceneSpec
     robot: ArticulationCfg
 
