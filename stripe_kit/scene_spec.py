@@ -1,15 +1,14 @@
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from abc import abstractmethod, ABC
 from logging import getLogger
-
-logger = getLogger(__name__)
 
 from isaaclab.assets import AssetBaseCfg
 
 from .asset import AssetSpec, LightSpec
-from .terrain import TerrainInstance
 from .factory import SceneCfgFactory
+from .terrain import TerrainInstance
 
+logger = getLogger(__name__)
 
 def spawn_cfg(cfg: AssetBaseCfg) -> None:
     if cfg.spawn is not None:
@@ -55,7 +54,7 @@ class SceneSpec(ABC):
         ...
 
     def create_instance(
-        self, num_envs: int = 1, env_spacing: float = 0.0, **kwargs
+        self, num_envs: int = 1, env_spacing: float = 0.0, **kwargs: bool
     ) -> SceneCfgFactory:
         """Create a SceneCfgFactory object from the SceneSpec object.
 

@@ -1,16 +1,14 @@
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from abc import abstractmethod, ABC
 from logging import getLogger
-
-logger = getLogger(__name__)
 
 from isaaclab.assets import AssetBaseCfg
 from isaaclab.sim.spawners.lights import DistantLightCfg
 
-
+from .mesh import CLASS_TAG, AssetMesh
 from .terrain import TerrainInstance
-from .mesh import AssetMesh, CLASS_TAG
 
+logger = getLogger(__name__)
 
 @dataclass
 class AssetSpec(ABC):
@@ -71,7 +69,7 @@ class AssetSpec(ABC):
         )
 
 
-class IdenticalAssetSpec(AssetSpec):
+class IdenticalAssetSpec(AssetSpec, ABC):
     """A specification for an asset class, that will be identical across all instances"""
 
     def __init__(

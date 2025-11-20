@@ -1,11 +1,12 @@
 from collections.abc import Mapping
-from dataclasses import dataclass, MISSING
+from dataclasses import MISSING, dataclass
+from typing import Any
 
-from isaaclab.scene import InteractiveSceneCfg
-from isaaclab.envs import ManagerBasedRLEnv, ManagerBasedRLEnvCfg, ViewerCfg
-from isaaclab.utils import configclass
 from isaaclab.assets import ArticulationCfg
+from isaaclab.envs import ManagerBasedRLEnv, ManagerBasedRLEnvCfg, ViewerCfg
+from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.sensors import ContactSensorCfg
+from isaaclab.utils import configclass
 
 from .scene_spec import SceneSpec
 
@@ -13,10 +14,10 @@ from .scene_spec import SceneSpec
 @configclass
 class TaskEnvCfg(ManagerBasedRLEnvCfg):
 
-    spec: SceneSpec = MISSING
-    sensors: Mapping[str, ContactSensorCfg] = MISSING
+    spec: SceneSpec = MISSING # pyright: ignore[reportAssignmentType]
+    sensors: Mapping[str, ContactSensorCfg] = MISSING # pyright: ignore[reportAssignmentType]
 
-    def register(self, id: str, **kwargs):
+    def register(self, id: str, **kwargs: str):
         import gymnasium as gym
 
         globals()[id] = self
@@ -44,7 +45,7 @@ class TrainingSpec:
     sensors: Mapping[str, ContactSensorCfg]
 
     def to_env_cfg(
-        self, view_cfg: ViewerCfg, decimation: int, episode_length_s: float
+        self, view_cfg: ViewerCfg, decimation: int = 4, episode_length_s: float = 100.0
     ) -> TaskEnvCfg:
         dummy_scene = InteractiveSceneCfg(1, 1.0)
         setattr(dummy_scene, "robot", self.robot)
@@ -68,9 +69,9 @@ class TrainingSpec:
 
 
 class NflEnvMixin(ManagerBasedRLEnv):
-    def __init__(self, cfg: TaskEnvCfg, **kwargs):
+    def __init__(self, cfg: TaskEnvCfg, **kwargs: Any):
         factory = cfg.spec.create_instance(cfg.scene.num_envs, cfg.scene.env_spacing)
-        factory.set_robot(cfg.scene.robot)
+        factory.set_robot(cfg.scene.robot) # pyright: ignore[reportAttributeAccessIssue]
         for name, sensor in cfg.sensors.items():
             factory.add_sensor(name, sensor)
         cfg.scene = factory.get_scene()

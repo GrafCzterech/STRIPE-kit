@@ -9,6 +9,7 @@ from .scene_spec import SceneSpec
 from .factory import SceneCfgFactory
 from .mesh import AssetMesh, DynamicMesh, USDMesh, UniversalMesh
 from .env import TrainingSpec
+from .materials import MaterialHandler
 
 __all__ = [
     "SceneCfgFactory",
@@ -22,4 +23,5 @@ __all__ = [
     "USDMesh",
     "UniversalMesh",
     "TrainingSpec",
+    "MaterialHandler",
 ]

@@ -3,16 +3,12 @@ line-length = 80
 include = '\.pyi?$'
 
 [project]
-name = "neuroforgelab"
-version = "0.1.0"
+name = "stripe_kit"
+version = "0.2.0"
 description = ""
 readme = "README.md"
-requires-python = "==3.10.*"
+requires-python = ">=3.10"
 dependencies = []
-
-[tool.setuptools]
-packages = ["neuroforgelab"]
-package-dir = { "" = "src" }
 
 [tool.pyright]
 reportUnusedCallResult = false
@@ -25,13 +21,15 @@ reportUnknownArgumentType = false
 reportExplicitAny = "hint"
 reportUnknownVariableType = "hint"
 reportPrivateLocalImportUsage = "hint"
+reportImplicitOverride = "hint"
 
 [project.optional-dependencies]
 dev = ["black"]
 test = ["unittest"]
+docs = ["sphinx", "sphinx-rtd-theme"]
 
 [project.scripts]
-skrl_train = "neuroforgelab.scripts.train:main"
+skrl_train = "stripe_kit.scripts.train:main"
 
 [project.urls]
 Repository = "https://github.com/GrafCzterech/NeuroForgeLab"

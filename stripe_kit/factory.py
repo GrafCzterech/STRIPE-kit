@@ -1,7 +1,5 @@
-from logging import getLogger
 from copy import copy, deepcopy
-
-logger = getLogger(__name__)
+from logging import getLogger
 
 # isaaclab imports
 from isaaclab.assets import AssetBaseCfg
@@ -9,7 +7,9 @@ from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.sensors import SensorBaseCfg
 
 from .asset import SceneAsset
-from .terrain import TerrainInstance, TERRAIN_NAME
+from .terrain import TERRAIN_NAME, TerrainInstance
+
+logger = getLogger(__name__)
 
 
 class NFLInteractiveSceneCfg(InteractiveSceneCfg):
@@ -27,7 +27,7 @@ class SceneCfgFactory:
         terrain: TerrainInstance,
         num_envs: int = 1,
         env_spacing: float = 0.0,
-        **kwargs,
+        **kwargs: bool,
     ):
         """Create a new SceneCfgFactory object
 
@@ -84,7 +84,6 @@ class SceneCfgFactory:
 
     def get_scene(
         self,
-        **kwargs,
     ) -> NFLInteractiveSceneCfg:
         """Gets the scene configuration
 
@@ -96,7 +95,7 @@ class SceneCfgFactory:
         """
         logger.debug("Creating scene cfg")
 
-        for i, asset in enumerate(self.terrain.to_asset_cfg(**kwargs)):
+        for i, asset in enumerate(self.terrain.to_asset_cfg()):
             setattr(
                 self.cfg,
                 TERRAIN_NAME + f"_{i}",

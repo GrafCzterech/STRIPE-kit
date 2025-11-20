@@ -1,16 +1,18 @@
 from dataclasses import dataclass
 from logging import getLogger
 
-logger = getLogger(__name__)
-
-from isaaclab.terrains import SubTerrainBaseCfg, TerrainGeneratorCfg
+import numpy as np
 from isaaclab.assets import AssetBaseCfg
 from isaaclab.sim.spawners import PreviewSurfaceCfg
+from isaaclab.terrains import SubTerrainBaseCfg, TerrainGeneratorCfg
 
+# from pxr import Sdf, UsdShade
 from trimesh import Trimesh
-import numpy as np
 
+# from .materials import MaterialHandler
 from .mesh import DynamicMesh
+
+logger = getLogger(__name__)
 
 TERRAIN_NAME = "terrain"
 
@@ -27,6 +29,8 @@ class TerrainInstance:
     """The size of the terrain in meters"""
     color: tuple[float, float, float]
     """The color of the terrain"""
+    # materials: dict[list[tuple[str, str]], UsdShade.Material]  # type: ignore
+
 
     def to_cfg(self) -> TerrainGeneratorCfg:
         """Create a TerrainGeneratorCfg object from a TerrainInstance object
