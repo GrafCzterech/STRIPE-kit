@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from logging import getLogger
 from typing import Any
 
@@ -8,13 +8,15 @@ import isaacsim.core.utils.semantics as semantics_utils  # pyright: ignore[repor
 from isaaclab.sim.converters import MeshConverter, MeshConverterCfg
 from isaaclab.sim.spawners import (
     PreviewSurfaceCfg,
+    MdlFileCfg,
     RigidBodyMaterialCfg,
     SpawnerCfg,
     UsdFileCfg,
     VisualMaterialCfg,
+    spawn_from_mdl_file,
 )
 from isaaclab.terrains.utils import create_prim_from_mesh
-from pxr.Usd import Prim  # pyright: ignore[reportMissingImports]
+from pxr.Usd import Prim  # pyright: ignore[reportAttributeAccessIssue, reportMissingImports]
 from trimesh import Trimesh
 
 logger = getLogger(__name__)
@@ -102,9 +104,11 @@ class DynamicMesh(AssetMesh):
 
     mesh: Trimesh
     """The Trimesh object that defines the mesh"""
-    visual_material: VisualMaterialCfg = PreviewSurfaceCfg()
+    visual_material_path: str | None = None
+    """Path to the visual material file, needed for MDL materials only"""
+    visual_material: VisualMaterialCfg = field(default_factory=PreviewSurfaceCfg)
     """The visual material configuration for the mesh"""
-    physics_material: RigidBodyMaterialCfg = RigidBodyMaterialCfg()
+    physics_material: RigidBodyMaterialCfg = field(default_factory=RigidBodyMaterialCfg)
     """The physics material configuration for the mesh"""
 
     # inspiration:
@@ -120,6 +124,9 @@ class DynamicMesh(AssetMesh):
             SpawnerCfg: A SpawnerCfg object representing the dynamic mesh
         """
         logger.debug("Creating dynamic mesh cfg")
+
+        if self.visual_material_path:
+            self.visual_material = MdlFileCfg(mdl_path=self.visual_material_path)
 
         def func_wrapper(prim: str, cfg: SpawnerCfg, *args: Any, **kwargs: Any) -> Prim: # pyright: ignore[reportUnknownParameterType]
             create_prim_from_mesh(

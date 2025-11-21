@@ -36,7 +36,8 @@ class TerrainInstance:
     """The size of the terrain in meters"""
     color: tuple[float, float, float]
     """The color of the terrain"""
-    # materials: dict[list[tuple[str, str]], UsdShade.Material]  # type: ignore
+    material: str | None = None 
+    """Path to the material mdl file"""
 
 
     def to_cfg(self) -> TerrainGeneratorCfg:
@@ -71,7 +72,7 @@ class TerrainInstance:
         res = []
         for i, (mesh, tags) in enumerate(self.mesh):
             spawner = DynamicMesh(
-                mesh, PreviewSurfaceCfg(diffuse_color=self.color)
+                mesh, self.material, PreviewSurfaceCfg(diffuse_color=self.color)
             ).to_cfg()
             spawner.semantic_tags = tags
             cfg = AssetBaseCfg(
