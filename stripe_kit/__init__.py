@@ -41,7 +41,6 @@ module.
 from .asset import AssetInstance, AssetSpec, IdenticalAssetSpec
 from .env import TrainingSpec
 from .factory import SceneCfgFactory
-from .materials import MaterialHandler
 from .mesh import AssetMesh, DynamicMesh, UniversalMesh, USDMesh
 from .scene_spec import SceneSpec
 from .terrain import TerrainInstance
@@ -58,5 +57,4 @@ __all__ = [
     "USDMesh",
     "UniversalMesh",
     "TrainingSpec",
-    "MaterialHandler",
 ]
