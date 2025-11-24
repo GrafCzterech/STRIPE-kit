@@ -32,4 +32,4 @@ docs = ["sphinx", "sphinx-rtd-theme"]
 skrl_train = "stripe_kit.scripts.train:main"
 
 [project.urls]
-Repository = "https://github.com/GrafCzterech/NeuroForgeLab"
+Repository = "https://github.com/GrafCzterech/STRIPE-kit"

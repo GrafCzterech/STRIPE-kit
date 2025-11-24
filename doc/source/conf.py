@@ -6,10 +6,10 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'STRIPE-kit'
-copyright = '2025, Tomasz Chady, Jakub Markil, Oskar Winiarski, Patryk Olszewski'
-author = 'Tomasz Chady, Jakub Markil, Oskar Winiarski, Patryk Olszewski'
-release = '0.2.0'
+project = "STRIPE-kit"
+copyright = "2025, Graf Czterech"
+author = "Tomasz Chady, Jakub Markil, Patryk Olszewski, Oskar Winiarski"
+release = "0.2.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -21,14 +21,15 @@ extensions = [
 ]
 
 
-templates_path = ['_templates']
+templates_path = ["_templates"]
 exclude_patterns = []
 
-autodoc_mock_imports = ['isaaclab', 'isaacsim', 'pxr']
+autodoc_mock_imports = ["isaaclab", "isaacsim", "pxr", "trimesh"]
 
+latex_elements = {"extraclassoptions": "openany,oneside"}
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'sphinx_rtd_theme'
-html_static_path = ['_static']
+html_theme = "sphinx_rtd_theme"
+html_static_path = ["_static"]
