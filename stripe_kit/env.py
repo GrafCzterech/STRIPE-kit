@@ -14,8 +14,10 @@ from .scene_spec import SceneSpec
 @configclass
 class TaskEnvCfg(ManagerBasedRLEnvCfg):
 
-    spec: SceneSpec = MISSING # pyright: ignore[reportAssignmentType]
-    sensors: Mapping[str, ContactSensorCfg] = MISSING # pyright: ignore[reportAssignmentType]
+    spec: SceneSpec = MISSING  # pyright: ignore[reportAssignmentType]
+    sensors: Mapping[str, ContactSensorCfg] = (
+        MISSING  # pyright: ignore[reportAssignmentType]
+    )
 
     def register(self, id: str, **kwargs: str):
         import gymnasium as gym
@@ -32,9 +34,6 @@ class TaskEnvCfg(ManagerBasedRLEnvCfg):
 @dataclass
 class TrainingSpec:
     """A complete specification for training a robot in a scene.
-
-    Usage
-    ======
 
     Having defined your scene using a `SceneSpec`, you then have to define your
     task, by deciding which robot to use, what sensors you need, and your
@@ -60,7 +59,10 @@ class TrainingSpec:
     sensors: Mapping[str, ContactSensorCfg]
 
     def to_env_cfg(
-        self, view_cfg: ViewerCfg, decimation: int = 4, episode_length_s: float = 100.0
+        self,
+        view_cfg: ViewerCfg,
+        decimation: int = 4,
+        episode_length_s: float = 100.0,
     ) -> TaskEnvCfg:
         dummy_scene = InteractiveSceneCfg(1, 1.0)
         setattr(dummy_scene, "robot", self.robot)
@@ -85,8 +87,12 @@ class TrainingSpec:
 
 class NflEnvMixin(ManagerBasedRLEnv):
     def __init__(self, cfg: TaskEnvCfg, **kwargs: Any):
-        factory = cfg.spec.create_instance(cfg.scene.num_envs, cfg.scene.env_spacing)
-        factory.set_robot(cfg.scene.robot) # pyright: ignore[reportAttributeAccessIssue]
+        factory = cfg.spec.create_instance(
+            cfg.scene.num_envs, cfg.scene.env_spacing
+        )
+        factory.set_robot(
+            cfg.scene.robot
+        )  # pyright: ignore[reportAttributeAccessIssue]
         for name, sensor in cfg.sensors.items():
             factory.add_sensor(name, sensor)
         cfg.scene = factory.get_scene()

@@ -49,6 +49,13 @@ the Stripe Kit package:
 
     pip install stripe_kit
 
+However, there's nothing stopping you from installing it from the git repo
+directly:
+
+.. code-block:: bash
+
+    pip install git+https://github.com/GrafCzterech/STRIPE-kit.git
+
 Test
 -----
 

@@ -10,6 +10,7 @@ from .terrain import TerrainInstance
 
 logger = getLogger(__name__)
 
+
 def spawn_cfg(cfg: AssetBaseCfg) -> None:
     if cfg.spawn is not None:
         cfg.spawn.func(cfg.prim_path, cfg.spawn)
@@ -27,16 +28,14 @@ class SceneSpec(ABC):
     Here you define how big the scenes will be, what **type** of assets they
     will have and what light should be added to the scene.
 
-    Implementing
-    =============
+    ----------
 
     You **have to** implement the `generate` method, which is used to generate the
     terrain for the scene. Beyond that, for more complex scenes it's a good
     idea to implement `create_instance` on your own, but for simpler use
     cases that shouldn't be necessary.
 
-    Palette
-    ========
+    ----------
 
     The idea is, that your scene *should* have a logical palette of asset types.
     Think of it this way: a forest, will have trees, rocks, bushes etc...

@@ -5,8 +5,9 @@ utilizing different classes provided here, ideally in a separate module, and
 then after providing the task specification simply register it with gymnasium
 and run your Isaac Lab RL training.
 
-Usage
-======
+----------
+
+Here's a step-by-step guide to get you started:
 
 1. Create your `SceneSpec`
     This is where you define how the scene should be generated. Create a new
@@ -26,8 +27,7 @@ Usage
     once the package is installed should be accessible via the CLI as
     `skrl_train`.
 
-Core concepts
-==============
+----------
 
 There are a few core concepts you need to understand when working with this
 module.
