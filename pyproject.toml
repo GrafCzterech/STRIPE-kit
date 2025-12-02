@@ -25,7 +25,6 @@ reportImplicitOverride = "hint"
 
 [project.optional-dependencies]
 dev = ["black"]
-test = ["unittest"]
 docs = ["sphinx", "sphinx-rtd-theme"]
 
 [project.scripts]
