@@ -8,7 +8,7 @@ version = "0.3.0"
 description = "Wrapper over Isaac Lab's API"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = ["numpy"]
 authors = [
     {name = "Tomasz Chady", email = "tomasz.chady@gmail.com"},
     {name = "Jakub Markil", email = "jakub.markil1@gmail.com"},
