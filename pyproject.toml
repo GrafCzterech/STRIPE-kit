@@ -5,7 +5,7 @@ include = '\.pyi?$'
 [project]
 name = "stripe_kit"
 version = "0.3.0"
-description = "Wrapper over Isaac Lab's API"
+description = "Streamlined training for robots in plausible environments "
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = []
