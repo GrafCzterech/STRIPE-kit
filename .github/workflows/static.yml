@@ -34,7 +34,7 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Install dependencies
-        run: pip install sphinx sphinx_rtd_theme
+        run: pip install sphinx sphinx_rtd_theme .
       - name: Make sphinx
         working-directory: ./doc
         run: make html
