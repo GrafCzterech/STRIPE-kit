@@ -1,6 +1,7 @@
 # STRIPE-kit
 
-[![Documentation](https://img.shields.io/badge/github-Documentation-blue?logo=github)](https://grafczterech.github.io/STRIPE-kit/index.html)
+[![Documentation](https://img.shields.io/badge/github-Documentation-green?logo=github)](https://grafczterech.github.io/STRIPE-kit/index.html)
+[![PyPi](https://img.shields.io/badge/PyPI-stripe_kit-blue?logo=python)](https://pypi.org/project/stripe_kit/)
 
 STRIPE-kit is a collection of tools and resources designed to help developers
 build environments and tasks for use in Isaac Lab. The core idea is that you
