@@ -3,7 +3,7 @@
 [![Documentation](https://img.shields.io/badge/github-Documentation-magenta?logo=github)](https://grafczterech.github.io/STRIPE-kit/index.html)
 [![PyPi](https://img.shields.io/badge/PyPI-stripe_kit-blue?logo=python)](https://pypi.org/project/stripe_kit/)
 
-**S**treamlined **T**raining for **R**obots **I**n **P**lausible **E**environments
+**S**treamlined **T**raining for **R**obots **I**n **P**lausible **E**nvironments
 
 STRIPE-kit is a collection of tools and resources designed to help developers
 build environments and tasks for use in Isaac Lab. The core idea is that you
