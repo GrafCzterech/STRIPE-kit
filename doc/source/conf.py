@@ -9,7 +9,7 @@
 project = "STRIPE-kit"
 copyright = "2025, Graf Czterech"
 author = "Tomasz Chady, Jakub Markil, Patryk Olszewski, Oskar Winiarski"
-release = "0.2.0"
+release = "0.3.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
