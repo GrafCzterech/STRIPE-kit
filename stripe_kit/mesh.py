@@ -7,8 +7,8 @@ import isaacsim.core.utils.prims as prim_utils  # pyright: ignore[reportMissingI
 import isaacsim.core.utils.semantics as semantics_utils  # pyright: ignore[reportMissingImports]
 from isaaclab.sim.converters import MeshConverter, MeshConverterCfg
 from isaaclab.sim.spawners import (
-    PreviewSurfaceCfg,
     MdlFileCfg,
+    PreviewSurfaceCfg,
     RigidBodyMaterialCfg,
     SpawnerCfg,
     UsdFileCfg,
@@ -16,8 +16,8 @@ from isaaclab.sim.spawners import (
     spawn_from_mdl_file,
 )
 from isaaclab.terrains.utils import create_prim_from_mesh
-from pxr.Usd import Prim  # pyright: ignore[reportAttributeAccessIssue, reportMissingImports]
-from trimesh import Trimesh
+from pxr.Usd import Prim  # pyright: ignore[reportMissingImports]
+from trimesh import Trimesh, primitives
 
 logger = getLogger(__name__)
 
@@ -144,3 +144,7 @@ class DynamicMesh(AssetMesh):
             return p
 
         return SpawnerCfg(func=func_wrapper, **kwargs)
+
+class DebugMesh(DynamicMesh):
+    def __init__(self):
+        super().__init__(mesh=primitives.Box(extents=[1.0, 1.0, 1.0]))

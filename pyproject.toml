@@ -28,8 +28,9 @@ dev = ["black"]
 test = ["unittest"]
 docs = ["sphinx", "sphinx-rtd-theme"]
 
-[project.scripts]
-skrl_train = "stripe_kit.scripts.train:main"
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["stripe_kit"]
 
 [project.urls]
 Repository = "https://github.com/GrafCzterech/STRIPE-kit"

@@ -72,19 +72,17 @@ to test that we can simulate things, here's a very simple one:
 
     import argparse
     parser = argparse.ArgumentParser(
-        description="Basic scene loading from NeuroforgeLab Interface"
+        description="Basic scene loading"
     )
     AppLauncher.add_app_launcher_args(parser)
     args_cli = parser.parse_args()
 
     simulation_app = AppLauncher(args_cli).app
 
-    from isaaclab.scene import InteractiveScene
+    from isaaclab.scene import InteractiveScene, InteractiveSceneCfg
     from isaaclab.sim import SimulationContext, SimulationCfg
 
     from isaaclab_assets.robots.spot import SPOT_CFG
-
-    from forest_gen import ForestGenSpec
 
 
     def run_simulation(sim: SimulationContext, scene: InteractiveScene) -> None:
@@ -117,11 +115,7 @@ to test that we can simulate things, here's a very simple one:
         sim.set_camera_view((0.0, 0.0, 5.0), (1.0, 1.0, 4.0))
 
         # Scene generation
-        generator = ForestGenSpec(size=100)
-        logger.debug("Scene generator initialized")
-        scene_factory = generator.create_instance(num_envs=2, env_spacing=1.0)
-        scene_factory.set_robot(SPOT_CFG)
-        my_scene_cfg = scene_factory.get_scene()
+        my_scene_cfg = InteractiveSceneCfg(1, 0.0)
 
         logger.debug("Scene generated")
         my_scene = InteractiveScene(my_scene_cfg)
@@ -139,3 +133,12 @@ Assuming it's saved as `sim.py`, we can run it using the following command:
 .. code-block:: bash
 
     python3 sim.py
+
+You can launch Isaac Lab / Sim integrating scripts in a multitude of ways,
+however, the one which we have found the easiest is to have each script
+launch Isaac Lab, as it's done in the script above. **Be sure** to manage
+import accordingly however, modules such as: `isaaclab`, `isaacsim`,
+`gymnasium`, `skrl`, `pxr` will not be importable, as long as there isn't
+a running instance of Isaac Lab. Since `stripe_kit` uses these imports
+to provide type hints, you should only import `stripe_kit` after you have
+a running instance of the simulation.

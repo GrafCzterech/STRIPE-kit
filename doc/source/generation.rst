@@ -123,16 +123,9 @@ Having created the training specification, in order to start RL training, you
 first need to register it. This is accomplished by calling
 :py:meth:`stripe_kit.TrainingSpec.to_env_cfg`, which returns an object that has
 a method `register` responsible for registering the
-environment within gymnasium. In order to train, we provide a convenience
-script, `skrl_train`. Call it like this:
-
-.. code-block:: bash
-
-    skrl_train --task <task name>
-
-Our example script has been prepared to use SKRL framework, which is 
-supported by Isaac Lab. Feel free to use other supported frameworks
-with STRIPE-kit.
+environment within gymnasium. In order to train, you will need to create
+a separate training script, that first registers the environment,
+and then actually does the training, using a training framework of your choice.
 
 .. figure:: isaaclab_scene_interface.png
     :scale: 50 %

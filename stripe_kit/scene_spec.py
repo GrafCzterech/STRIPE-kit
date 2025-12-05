@@ -6,6 +6,7 @@ from isaaclab.assets import AssetBaseCfg
 
 from .asset import AssetSpec, LightSpec
 from .factory import SceneCfgFactory
+from .mesh import DebugMesh
 from .terrain import TerrainInstance
 
 logger = getLogger(__name__)
@@ -79,7 +80,7 @@ class SceneSpec(ABC):
         ...
 
     def create_instance(
-        self, num_envs: int = 1, env_spacing: float = 0.0, **kwargs: bool
+        self, num_envs: int = 1, env_spacing: float = 0.0, debug_models: bool = False, **kwargs: bool
     ) -> SceneCfgFactory:
         """Create a SceneCfgFactory object from the SceneSpec object.
 
@@ -101,6 +102,8 @@ class SceneSpec(ABC):
         for asset in self.palette:
             logger.debug(f"Generating asset {asset.name}")
             for child in asset.generate(terrain):
+                if debug_models:
+                    child.mesh = DebugMesh()
                 factory.add_asset(child)
         logger.debug("Adding light")
         factory.add_asset(self.light)
