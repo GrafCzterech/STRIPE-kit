@@ -39,7 +39,7 @@ module.
 """
 
 from .asset import AssetInstance, AssetSpec, IdenticalAssetSpec
-from .env import TrainingSpec
+from .env import TaskEnvCfg, TrainingSpec
 from .factory import SceneCfgFactory
 from .mesh import AssetMesh, DynamicMesh, UniversalMesh, USDMesh, instancable
 from .scene_spec import SceneSpec
@@ -57,5 +57,6 @@ __all__ = [
     "USDMesh",
     "UniversalMesh",
     "TrainingSpec",
+    "TaskEnvCfg",
     "instancable",
 ]

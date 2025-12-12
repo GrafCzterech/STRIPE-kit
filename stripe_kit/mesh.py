@@ -89,6 +89,7 @@ class UniversalMesh(AssetMesh):
         mesh_cfg = UsdFileCfg(usd_path=self.converter.usd_path, **kwargs)
         return mesh_cfg
 
+
 def instancable(cls: type[AssetMesh]) -> type[AssetMesh]:
     """Decorator to make the assets work as instancables
 
@@ -108,7 +109,9 @@ def instancable(cls: type[AssetMesh]) -> type[AssetMesh]:
     return _instancable
 
 
-def apply_semantics(prim: Prim, type: str, value: str) -> None: # pyright: ignore[reportUnknownParameterType]
+def apply_semantics(
+    prim: Prim, type: str, value: str  # pyright: ignore[reportUnknownParameterType]
+) -> None:
     """Applies a semantic type and data to a prim.
 
     Args:
@@ -149,7 +152,9 @@ class DynamicMesh(AssetMesh):
         if self.visual_material_path:
             self.visual_material = MdlFileCfg(mdl_path=self.visual_material_path)
 
-        def func_wrapper(prim: str, cfg: SpawnerCfg, *args: Any, **kwargs: Any) -> Prim: # pyright: ignore[reportUnknownParameterType]
+        def func_wrapper(  # pyright: ignore[reportUnknownParameterType]
+            prim: str, cfg: SpawnerCfg, *args: Any, **kwargs: Any
+        ) -> Prim:
             create_prim_from_mesh(
                 prim,
                 self.mesh,
@@ -166,6 +171,8 @@ class DynamicMesh(AssetMesh):
 
         return SpawnerCfg(func=func_wrapper, **kwargs)
 
+
+@instancable
 class DebugMesh(DynamicMesh):
     def __init__(self):
         super().__init__(mesh=primitives.Box(extents=[1.0, 1.0, 1.0]))

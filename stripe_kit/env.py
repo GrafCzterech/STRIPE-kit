@@ -2,25 +2,40 @@ from collections.abc import Mapping
 from dataclasses import MISSING, dataclass
 from typing import Any
 
+import gymnasium as gym
 from isaaclab.assets import ArticulationCfg
 from isaaclab.envs import ManagerBasedRLEnv, ManagerBasedRLEnvCfg, ViewerCfg
-from isaaclab.scene import InteractiveSceneCfg
-from isaaclab.sensors import ContactSensorCfg
+from isaaclab.sensors import SensorBaseCfg
 from isaaclab.utils import configclass
 
+from .factory import NFLInteractiveSceneCfg
 from .scene_spec import SceneSpec
 
 
 @configclass
 class TaskEnvCfg(ManagerBasedRLEnvCfg):
+    """Configuration for a task environment, usually created by `TrainingSpec`."""
 
+    scene: NFLInteractiveSceneCfg = MISSING  # pyright: ignore[reportAssignmentType, reportIncompatibleVariableOverride]
+    """The actual live scene"""
     spec: SceneSpec = MISSING  # pyright: ignore[reportAssignmentType]
-    sensors: Mapping[str, ContactSensorCfg] = (
-        MISSING  # pyright: ignore[reportAssignmentType]
-    )
+    """Specification for the scene to be used in the environment."""
+    sensors: Mapping[
+        str, SensorBaseCfg
+    ] = MISSING  # pyright: ignore[reportAssignmentType]
+    """Definition of sensors to be used in the environment."""
 
     def register(self, id: str, **kwargs: str):
-        import gymnasium as gym
+        """Registers the environment within `gymnasium`.
+
+        An instance of this class is stored within globals of this module,
+        as `globals()[id]`. Gymnasium is then instructed to get this instance,
+        and pass it to `NflEnvMixin`.
+
+        Args:
+            id (str): The id of the environment to register.
+            **kwargs (str): Additional keyword arguments to pass to `gymnasium.register`.
+        """
 
         globals()[id] = self
         gym.register(
@@ -56,7 +71,7 @@ class TrainingSpec:
     terminations: object
     commands: object
 
-    sensors: Mapping[str, ContactSensorCfg]
+    sensors: Mapping[str, SensorBaseCfg]
 
     def to_env_cfg(
         self,
@@ -64,11 +79,8 @@ class TrainingSpec:
         decimation: int = 4,
         episode_length_s: float = 100.0,
     ) -> TaskEnvCfg:
-        dummy_scene = InteractiveSceneCfg(1, 1.0)
-        setattr(dummy_scene, "robot", self.robot)
-
         env_cfg = TaskEnvCfg(
-            scene=dummy_scene,
+            scene=NFLInteractiveSceneCfg(1, 1.0, robot=self.robot),
             viewer=view_cfg,
             decimation=decimation,
             actions=self.actions,
@@ -87,14 +99,9 @@ class TrainingSpec:
 
 class NflEnvMixin(ManagerBasedRLEnv):
     def __init__(self, cfg: TaskEnvCfg, **kwargs: Any):
-        factory = cfg.spec.create_instance(
-            cfg.scene.num_envs, cfg.scene.env_spacing
-        )
-        factory.set_robot(
-            cfg.scene.robot  # pyright: ignore[reportAttributeAccessIssue]
-        )
+        factory = cfg.spec.create_instance(cfg.scene.num_envs, cfg.scene.env_spacing)
         for name, sensor in cfg.sensors.items():
             factory.add_sensor(name, sensor)
-        #cfg.terrain = factory.terrain
-        cfg.scene = factory.get_scene()
+        cfg.scene = factory.get_scene(cfg.scene.robot)
+        self.terrain = factory.terrain
         super().__init__(cfg, **kwargs)
