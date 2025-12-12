@@ -91,10 +91,10 @@ class NflEnvMixin(ManagerBasedRLEnv):
             cfg.scene.num_envs, cfg.scene.env_spacing
         )
         factory.set_robot(
-            cfg.scene.robot
-        )  # pyright: ignore[reportAttributeAccessIssue]
+            cfg.scene.robot  # pyright: ignore[reportAttributeAccessIssue]
+        )
         for name, sensor in cfg.sensors.items():
             factory.add_sensor(name, sensor)
+        #cfg.terrain = factory.terrain
         cfg.scene = factory.get_scene()
         super().__init__(cfg, **kwargs)
-        self.cfg = cfg

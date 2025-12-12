@@ -13,7 +13,7 @@ from isaaclab.sim.spawners import (
     SpawnerCfg,
     UsdFileCfg,
     VisualMaterialCfg,
-    spawn_from_mdl_file,
+    # spawn_from_mdl_file,
 )
 from isaaclab.terrains.utils import create_prim_from_mesh
 from pxr.Usd import Prim  # pyright: ignore[reportMissingImports]
@@ -30,6 +30,9 @@ class AssetMesh(ABC):
     @abstractmethod
     def to_cfg(self, **kwargs: Any) -> SpawnerCfg:
         """Create a SpawnerCfg object from an AssetMesh object
+
+        Logically this should return a new object, thus nullifying any effects
+        of instancing. If you wish to prevent this behavior, use the `instancable` decorator.
 
         Args:
             **kwargs: Additional keyword arguments, passed to the SpawnerCfg constructor
@@ -85,6 +88,24 @@ class UniversalMesh(AssetMesh):
         """
         mesh_cfg = UsdFileCfg(usd_path=self.converter.usd_path, **kwargs)
         return mesh_cfg
+
+def instancable(cls: type[AssetMesh]) -> type[AssetMesh]:
+    """Decorator to make the assets work as instancables
+
+    Overrides `to_cfg` to return a single instance of `SpawnerCfg`
+    """
+
+    class _instancable(cls):
+        spawner: SpawnerCfg | None = None
+
+        def to_cfg(self, **kwargs: Any) -> SpawnerCfg:
+            if self.spawner is None:
+                self.spawner = cls.to_cfg(self, **kwargs)
+            elif kwargs:
+                logger.warning("Ignoring additional keyword arguments")
+            return self.spawner
+
+    return _instancable
 
 
 def apply_semantics(prim: Prim, type: str, value: str) -> None: # pyright: ignore[reportUnknownParameterType]

@@ -108,6 +108,10 @@ class IdenticalAssetSpec(AssetSpec, ABC):
     def generate(self, terrain: TerrainInstance) -> list["AssetInstance"]:
         """Generate instances of the asset to be placed on the terrain
 
+        Internally, this method calls `self.find_positions(terrain)` to find
+        positions to place the asset on the terrain, and then
+        `self.create_instance(name, position, rotation)` to create instances of the asset.
+
         Args:
             terrain (TerrainInstance): The terrain to place the asset on
 
@@ -115,7 +119,7 @@ class IdenticalAssetSpec(AssetSpec, ABC):
             list[AssetInstance]: A list of instances of the asset to be placed on the terrain
         """
         return [
-            self.create_instance(
+            self.create_identical_instance(
                 f"{self.name}_{i}",
                 position,
                 self.rotation,
@@ -123,7 +127,7 @@ class IdenticalAssetSpec(AssetSpec, ABC):
             for i, position in enumerate(self.find_positions(terrain))
         ]
 
-    def create_instance(
+    def create_identical_instance(
         self,
         name: str,
         position: tuple[float, float, float],
