@@ -16,14 +16,23 @@ from .scene_spec import SceneSpec
 class TaskEnvCfg(ManagerBasedRLEnvCfg):
     """Configuration for a task environment, usually created by `TrainingSpec`."""
 
-    scene: NFLInteractiveSceneCfg = MISSING  # pyright: ignore[reportAssignmentType, reportIncompatibleVariableOverride]
+    scene: (  # pyright: ignore[reportIncompatibleVariableOverride]
+        NFLInteractiveSceneCfg
+    ) = MISSING  # pyright: ignore[reportAssignmentType]
     """The actual live scene"""
     spec: SceneSpec = MISSING  # pyright: ignore[reportAssignmentType]
     """Specification for the scene to be used in the environment."""
-    sensors: Mapping[
-        str, SensorBaseCfg
-    ] = MISSING  # pyright: ignore[reportAssignmentType]
+    sensors: Mapping[str, SensorBaseCfg] = (
+        MISSING  # pyright: ignore[reportAssignmentType]
+    )
     """Definition of sensors to be used in the environment."""
+
+    def __post_init__(self):
+        """Post initialization."""
+        # step settings
+        self.decimation = 4  # env step every 4 sim steps: 200Hz / 4 = 50Hz
+        # simulation settings
+        self.sim.dt = 0.005  # sim step every 5ms: 200Hz
 
     def register(self, id: str, **kwargs: str):
         """Registers the environment within `gymnasium`.
