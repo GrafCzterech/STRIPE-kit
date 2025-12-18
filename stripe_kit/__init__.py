@@ -13,7 +13,7 @@ Here's a step-by-step guide to get you started:
     This is where you define how the scene should be generated. Create a new
     class that inherits from `SceneSpec` and implement the methods as needed.
 2. Define your task
-    This is done via standard Isaac Lab `configclass`es, so you define your
+    This is done via standard Isaac Lab configclasses, so you define your
     reward terms, termination terms, etc...
 3. Couple your task with your scene
     This is done by creating a new instance of `TrainingSpec`, which takes in
@@ -36,6 +36,7 @@ module.
 - Scene: An instance of a generated scene
 - Mesh: A 3d mesh (3d model) that can be used in a scene
 - configclass: The preferred Isaac Lab way of creating things, is via creating a subclass or instance of a configclass
+
 """
 
 from .asset import AssetInstance, AssetSpec, IdenticalAssetSpec

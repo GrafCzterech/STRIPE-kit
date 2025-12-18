@@ -12,7 +12,6 @@ from .factory import NFLInteractiveSceneCfg
 from .scene_spec import SceneSpec
 
 
-@configclass
 class TaskEnvCfg(ManagerBasedRLEnvCfg):
     """Configuration for a task environment, usually created by `TrainingSpec`."""
 

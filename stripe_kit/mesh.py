@@ -97,7 +97,7 @@ def instancable(cls: type[AssetMesh]) -> type[AssetMesh]:
     """
 
     class _instancable(cls):
-        spawner: SpawnerCfg | None = None
+        spawner = None
 
         def to_cfg(self, **kwargs: Any) -> SpawnerCfg:
             if self.spawner is None:
