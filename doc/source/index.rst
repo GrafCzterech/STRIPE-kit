@@ -40,6 +40,6 @@ module.
    installation
    stripe_kit
    generation
-   Showcase <https://github.com/GrafCzterech/forest-gen>
+   architecture
    Isaac Lab Documentation <https://isaac-sim.github.io/IsaacLab/main/index.html>
    Repository <https://github.com/GrafCzterech/STRIPE-kit>

@@ -15,7 +15,7 @@ a conda environment:
 
 .. code-block:: bash
 
-    conda create -p ~/env_isaaclab python=3.11
+    conda create -p ~/env_isaaclab python=3.10
     conda activate ~/env_isaaclab
 
 Now we have to install Isaac Lab. Unfortunately, since Isaac Lab isn't on
@@ -31,10 +31,10 @@ commands:
 
 .. code-block:: bash
 
-    conda develop ~/env_isaaclab/lib/python3.11/site-packages/isaaclab/source/isaaclab
-    conda develop ~/env_isaaclab/lib/python3.11/site-packages/isaaclab/source/isaaclab_tasks
-    conda develop ~/env_isaaclab/lib/python3.11/site-packages/isaaclab/source/isaaclab_rl
-    conda develop ~/env_isaaclab/lib/python3.11/site-packages/isaaclab/source/isaaclab_assets
+    conda develop ~/env_isaaclab/lib/python3.10/site-packages/isaaclab/source/isaaclab
+    conda develop ~/env_isaaclab/lib/python3.10/site-packages/isaaclab/source/isaaclab_tasks
+    conda develop ~/env_isaaclab/lib/python3.10/site-packages/isaaclab/source/isaaclab_rl
+    conda develop ~/env_isaaclab/lib/python3.10/site-packages/isaaclab/source/isaaclab_assets
 
 This will create necessary symlinks for the packages to be recognized by the
 Python interpreter, during development in your IDE.
