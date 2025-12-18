@@ -6,12 +6,12 @@ import gymnasium as gym
 from isaaclab.assets import ArticulationCfg
 from isaaclab.envs import ManagerBasedRLEnv, ManagerBasedRLEnvCfg, ViewerCfg
 from isaaclab.sensors import SensorBaseCfg
-from isaaclab.utils import configclass
 
 from .factory import NFLInteractiveSceneCfg
 from .scene_spec import SceneSpec
 
 
+@dataclass
 class TaskEnvCfg(ManagerBasedRLEnvCfg):
     """Configuration for a task environment, usually created by `TrainingSpec`."""
 
@@ -25,13 +25,6 @@ class TaskEnvCfg(ManagerBasedRLEnvCfg):
         MISSING  # pyright: ignore[reportAssignmentType]
     )
     """Definition of sensors to be used in the environment."""
-
-    def __post_init__(self):
-        """Post initialization."""
-        # step settings
-        self.decimation = 4  # env step every 4 sim steps: 200Hz / 4 = 50Hz
-        # simulation settings
-        self.sim.dt = 0.005  # sim step every 5ms: 200Hz
 
     def register(self, id: str, **kwargs: str):
         """Registers the environment within `gymnasium`.
