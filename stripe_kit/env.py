@@ -1,5 +1,5 @@
 from collections.abc import Mapping
-from dataclasses import MISSING, dataclass
+from dataclasses import dataclass
 from typing import Any
 
 import gymnasium as gym
@@ -66,6 +66,11 @@ class TaskEnvCfg(ManagerBasedRLEnvCfg):
             disable_env_checker=True,
             kwargs={"env_cfg_entry_point": f"{__name__}:{id}", **kwargs},
         )
+
+    def __post_init__(self):
+        """Post initialization."""
+        # simulation settings
+        self.sim.dt = 0.005
 
 
 @dataclass
