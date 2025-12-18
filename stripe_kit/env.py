@@ -11,20 +11,41 @@ from .factory import NFLInteractiveSceneCfg
 from .scene_spec import SceneSpec
 
 
-@dataclass
 class TaskEnvCfg(ManagerBasedRLEnvCfg):
     """Configuration for a task environment, usually created by `TrainingSpec`."""
 
-    scene: (  # pyright: ignore[reportIncompatibleVariableOverride]
-        NFLInteractiveSceneCfg
-    ) = MISSING  # pyright: ignore[reportAssignmentType]
-    """The actual live scene"""
-    spec: SceneSpec = MISSING  # pyright: ignore[reportAssignmentType]
-    """Specification for the scene to be used in the environment."""
-    sensors: Mapping[str, SensorBaseCfg] = (
-        MISSING  # pyright: ignore[reportAssignmentType]
-    )
-    """Definition of sensors to be used in the environment."""
+    scene: NFLInteractiveSceneCfg
+
+    def __init__(
+        self,
+        scene: NFLInteractiveSceneCfg,
+        viewer: ViewerCfg,
+        decimation: int,
+        actions: object,
+        observations: object,
+        events: object,
+        rewards: object,
+        terminations: object,
+        commands: object,
+        episode_length_s: float,
+        sensors: Mapping[str, SensorBaseCfg],
+        spec: SceneSpec,
+    ) -> None:
+        super().__init__(
+            viewer=viewer,
+            decimation=decimation,
+            actions=actions,
+            observations=observations,
+            events=events,
+            rewards=rewards,
+            terminations=terminations,
+            commands=commands,
+            episode_length_s=episode_length_s,
+        )
+
+        self.scene = scene  # pyright: ignore[reportIncompatibleVariableOverride]
+        self.sensors = sensors
+        self.spec = spec
 
     def register(self, id: str, **kwargs: str):
         """Registers the environment within `gymnasium`.
