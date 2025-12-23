@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from logging import getLogger
 
 from isaaclab.assets import AssetBaseCfg
-from isaaclab.sim.spawners.lights import DistantLightCfg
+from isaaclab.sim.spawners.lights import DistantLightCfg, DomeLightCfg
 
 from .mesh import CLASS_TAG, AssetMesh
 from .terrain import TerrainInstance
@@ -237,16 +237,18 @@ class AssetInstance(SceneAsset):
 
 
 @dataclass
-class LightSpec(SceneAsset):
-    """A scene light"""
+class DistantLightSpec(SceneAsset):
+    """Specification for a scene distant light in which
+     you can set exposure, intensity and color."""
+
 
     exposure: float = 11.0
-    intensity: float = 7.0
+    intensity: float = 1.0
     color: tuple[float, float, float] = (0.988, 0.957, 0.645)
 
     def to_cfg(self, scene_name: str = "World") -> AssetBaseCfg:
 
-        logger.debug("Creating light cfg")
+        logger.debug("Creating distant light cfg")
 
         light_cfg = DistantLightCfg()
         light_cfg.exposure = self.exposure
@@ -264,4 +266,34 @@ class LightSpec(SceneAsset):
         return cfg
 
     def get_name(self) -> str:
-        return "light"
+        return "distant_light"
+
+@dataclass
+class DomeLightSpec(SceneAsset):
+    """Specification for a scene dome light in which
+     you can set exposure, intensity and color."""
+
+    exposure: float = 0.0
+    intensity: float = 500.0
+    color: tuple[float, float, float] = (0.988, 0.957, 0.645)
+
+    def to_cfg(self, scene_name: str = "World") -> AssetBaseCfg:
+
+        logger.debug("Creating dome light cfg")
+
+        light_cfg = DomeLightCfg()
+        light_cfg.exposure = self.exposure
+        light_cfg.intensity = self.intensity
+        light_cfg.color = self.color
+
+        state = AssetBaseCfg.InitialStateCfg()
+        state.pos = (0, 0, 0)
+
+        cfg = AssetBaseCfg()
+        cfg.prim_path = f"/{scene_name}/{self.get_name()}"
+        cfg.spawn = light_cfg
+        cfg.init_state = state
+        return cfg
+
+    def get_name(self) -> str:
+        return "dome_light"

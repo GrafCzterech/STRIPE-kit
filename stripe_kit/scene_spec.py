@@ -4,7 +4,7 @@ from logging import getLogger
 
 from isaaclab.assets import AssetBaseCfg
 
-from .asset import AssetSpec, LightSpec
+from .asset import AssetSpec, DistantLightSpec, DomeLightSpec
 from .factory import SceneCfgFactory
 from .mesh import DebugMesh
 from .terrain import TerrainInstance
@@ -50,7 +50,8 @@ class SceneSpec(ABC):
     """The size of the scene"""
     palette: list[AssetSpec]
     """The palette of asset classes to be used in the scene"""
-    light: LightSpec = field(default_factory=LightSpec)
+    distant_light: DistantLightSpec = field(default_factory=DistantLightSpec)
+    dome_light: DomeLightSpec = field(default_factory=DomeLightSpec)
     """The light specification for the scene"""
 
     def add_asset(self, asset: AssetSpec):
@@ -106,5 +107,6 @@ class SceneSpec(ABC):
                     child.mesh = DebugMesh()
                 factory.add_asset(child)
         logger.debug("Adding light")
-        factory.add_asset(self.light)
+        factory.add_asset(self.distant_light)
+        factory.add_asset(self.dome_light)
         return factory
