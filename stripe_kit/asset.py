@@ -274,7 +274,7 @@ class DomeLightSpec(SceneAsset):
      you can set exposure, intensity and color."""
 
     exposure: float = 0.0
-    intensity: float = 500.0
+    intensity: float = 1000.0
     color: tuple[float, float, float] = (0.988, 0.957, 0.645)
 
     def to_cfg(self, scene_name: str = "World") -> AssetBaseCfg:
