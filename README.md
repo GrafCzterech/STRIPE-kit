@@ -1,6 +1,6 @@
 # STRIPE-kit
 
-[![Documentation](https://img.shields.io/badge/github-Documentation-magenta?logo=github)](https://grafczterech.github.io/STRIPE-kit/index.html)
+[![Documentation](https://img.shields.io/badge/github-Documentation-magenta?logo=github)](https://grafczterech.github.io/STRIPE-kit)
 [![PyPi](https://img.shields.io/badge/PyPI-stripe_kit-blue?logo=python)](https://pypi.org/project/stripe_kit/)
 
 **S**treamlined **T**raining for **R**obots **I**n **P**lausible **E**nvironments

@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = ["numpy"]
 authors = [
-    {name = "Tomasz Chady", email = "tomasz.chady@gmail.com"},
+    {name = "Tomasz Chady", email = "tomek.chady@gmail.com"},
     {name = "Jakub Markil", email = "jakub.markil1@gmail.com"},
     {name = "Patryk Olszewski", email = "patryk.olszewski@vip.onet.pl"},
     {name = "Oskar Winiarski", email = "oskarwiniarski09@gmail.com"},
