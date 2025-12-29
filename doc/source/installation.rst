@@ -70,6 +70,7 @@ to test that we can simulate things, here's a very simple one:
 
 .. code-block:: python3
 
+    from isaaaclab.app import AppLauncher
     import argparse
     parser = argparse.ArgumentParser(
         description="Basic scene loading"
@@ -109,7 +110,7 @@ to test that we can simulate things, here's a very simple one:
         sim_cfg = SimulationCfg(device=args_cli.device)
         sim = SimulationContext(sim_cfg)
 
-        logger.debug("Simulation context initialized")
+        print("Simulation context initialized")
 
         # Camera setting
         sim.set_camera_view((0.0, 0.0, 5.0), (1.0, 1.0, 4.0))
@@ -117,14 +118,14 @@ to test that we can simulate things, here's a very simple one:
         # Scene generation
         my_scene_cfg = InteractiveSceneCfg(1, 0.0)
 
-        logger.debug("Scene generated")
+        print("Scene generated")
         my_scene = InteractiveScene(my_scene_cfg)
 
         # Reset simulation context - required by Isaac Lab
         sim.reset()
 
         # Run scene
-        logger.info("Setup completed!")  # Yipeee! Cola trinken!
+        print("Setup completed!")  # Yipeee! Cola trinken!
         run_simulation(sim, my_scene)
         simulation_app.close()
 
@@ -142,3 +143,19 @@ import accordingly however, modules such as: `isaaclab`, `isaacsim`,
 a running instance of Isaac Lab. Since `stripe_kit` uses these imports
 to provide type hints, you should only import `stripe_kit` after you have
 a running instance of the simulation.
+
+Getting video out of Isaac Lab may be tricky. Especially if you are doing
+your work on a remote machine, like a computing cluster. For those use-cases
+Nvidia has developed a streamer called "Isaac Sim WebRTC Streaming Client".
+You can find more information about it
+`here <https://docs.isaacsim.omniverse.nvidia.com/5.1.0/installation/manual_livestream_clients.html>`_.
+To allow the WebRTC client to work, you will need to pass proper arguments
+to `isaacsim`, like it is done in the following example:
+
+.. code-block:: bash
+
+    python3 sim.py --headless --livestream 2
+
+`--headless` option disables video output, and `--livestream 2` enables WebRTC
+streaming output. Not passing any `livestream` option will result in a silent
+crash, which we know because we spent an ungodly amount of time debugging it.
