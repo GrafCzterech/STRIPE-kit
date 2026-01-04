@@ -123,7 +123,8 @@ Having created the training specification, in order to start RL training, you
 first need to register it. This is accomplished by calling
 :py:meth:`stripe_kit.TrainingSpec.to_env_cfg`, which returns an object that has
 a method `register` responsible for registering the
-environment within gymnasium. In order to train, you will need to create
+environment within gymnasium using :py:func:`gymnasium.register`.
+In order to train, you will need to create
 a separate training script, that first registers the environment,
 and then actually does the training, using a training framework of your choice.
 
