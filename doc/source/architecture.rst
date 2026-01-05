@@ -76,12 +76,16 @@ Showcase
 
 Feel free to explore our `codebase <https://github.com/GrafCzterech>`_,
 especially beyond the `stripe_kit` repository. There you can find our scene
-generation module `forest_gen <https://github.com/GrafCzterech/forest_gen>`_,
-and our task specification repository
-`forest_nav <https://github.com/GrafCzterech/forest_nav>`_. These should be
-useful for understanding how to implement your own tasks and scenes.
+generation module `forest_gen <https://github.com/GrafCzterech/forest_gen>`_, it
+should be useful for understanding how to implement your own tasks and scenes.
 
-Within those, we have implemented a generic nicely extensible forest generation
-logic, that you can easily use with `stripe_kit` to create your own scenes.
-`forest_nav` on the other hand, utilizes `forest_gen` to create scenes within
-which robots are trained to navigate through a forest.
+Be sure to check out `sim.py` and `task.py` at `forest_gen` repo root. They
+provide a reference of how you can simulate in IsaacLab the generated scene -
+in case of `sim.py`, and how to build a task with `stripe_kit` in case of
+`task.py`.
+
+Generally speaking, if you were to wrap `task.py` in another script, that
+was to import the exported `task_spec`, and then registered the spec, you
+would be 90% there when it comes to training a robot to walk in a forest.
+You would just have to follow the instructions on how to build a `training
+script <https://isaac-sim.github.io/IsaacLab/main/source/tutorials/03_envs/run_rl_training.html>`_
