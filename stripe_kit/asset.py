@@ -10,6 +10,7 @@ from .terrain import TerrainInstance
 
 logger = getLogger(__name__)
 
+
 @dataclass
 class AssetSpec(ABC):
     """A specification for a class of assets to be placed in a scene.
@@ -43,6 +44,7 @@ class AssetSpec(ABC):
         position: tuple[float, float, float],
         rotation: tuple[float, float, float, float],
         tags: dict[str, str] | None = None,
+        global_collisions: bool = False,
     ) -> "AssetInstance":
         """Create an AssetInstance object from an AssetSpec object
 
@@ -66,6 +68,7 @@ class AssetSpec(ABC):
             rotation,
             tags,
             asset_cfg_class=self.asset_cfg_class,
+            global_collisions=global_collisions,
         )
 
 
@@ -190,6 +193,7 @@ class AssetInstance(SceneAsset):
     """Additional tags for the asset"""
     asset_cfg_class: type[AssetBaseCfg] = AssetBaseCfg
     """The configuration class for the asset"""
+    global_collisions: bool = False
 
     def to_cfg(self) -> AssetBaseCfg:
         """Create a config class object from an AssetInstance object.
@@ -224,6 +228,7 @@ class AssetInstance(SceneAsset):
         init_state.pos = (self.position[0], self.position[1], self.position[2])
         init_state.rot = self.rotation
         obj.init_state = init_state
+        obj.collision_group = -1 if self.global_collisions else 0
 
         return obj
 
@@ -239,8 +244,7 @@ class AssetInstance(SceneAsset):
 @dataclass
 class DistantLightSpec(SceneAsset):
     """Specification for a scene distant light in which
-     you can set exposure, intensity and color."""
-
+    you can set exposure, intensity and color."""
 
     exposure: float = 11.0
     intensity: float = 1.0
@@ -268,10 +272,11 @@ class DistantLightSpec(SceneAsset):
     def get_name(self) -> str:
         return "distant_light"
 
+
 @dataclass
 class DomeLightSpec(SceneAsset):
     """Specification for a scene dome light in which
-     you can set exposure, intensity and color."""
+    you can set exposure, intensity and color."""
 
     exposure: float = 0.0
     intensity: float = 1000.0

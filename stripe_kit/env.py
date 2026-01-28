@@ -21,30 +21,23 @@ class TaskEnvCfg(ManagerBasedRLEnvCfg):
         scene: NFLInteractiveSceneCfg,
         viewer: ViewerCfg,
         decimation: int,
-        actions: object,
-        observations: object,
-        events: object,
-        rewards: object,
-        terminations: object,
-        commands: object,
         episode_length_s: float,
-        sensors: Mapping[str, SensorBaseCfg],
         spec: SceneSpec,
+        sensors: Mapping[str, SensorBaseCfg] | None,
+        **kwargs: Any,
     ) -> None:
         super().__init__(
             viewer=viewer,
             decimation=decimation,
-            actions=actions,
-            observations=observations,
-            events=events,
-            rewards=rewards,
-            terminations=terminations,
-            commands=commands,
             episode_length_s=episode_length_s,
+            **kwargs,
         )
 
-        self.scene = scene  # pyright: ignore[reportIncompatibleVariableOverride]
-        self.sensors = sensors
+        self.scene = (
+            scene  # pyright: ignore[reportIncompatibleVariableOverride]
+        )
+        if sensors:
+            self.sensors = sensors
         self.spec = spec
 
     def register(self, id: str, **kwargs: str):
@@ -73,7 +66,6 @@ class TaskEnvCfg(ManagerBasedRLEnvCfg):
         self.sim.dt = 0.005
 
 
-@dataclass
 class TrainingSpec:
     """A complete specification for training a robot in a scene.
 
@@ -87,18 +79,19 @@ class TrainingSpec:
     registered in gymnasium using the `register` method.
     """
 
-    scene: SceneSpec
-    robot: ArticulationCfg
+    def __init__(
+        self,
+        scene: SceneSpec,
+        robot: ArticulationCfg,
+        *,
+        sensors: Mapping[str, SensorBaseCfg] | None = None,
+        **kwargs: Any,
+    ):
+        self.scene = scene
+        self.robot = robot
+        self.sensors = sensors
 
-    actions: object
-    observations: object
-    events: object
-
-    rewards: object
-    terminations: object
-    commands: object
-
-    sensors: Mapping[str, SensorBaseCfg]
+        self.extras = kwargs
 
     def to_env_cfg(
         self,
@@ -110,15 +103,10 @@ class TrainingSpec:
             scene=NFLInteractiveSceneCfg(1, 1.0, robot=self.robot),
             viewer=view_cfg,
             decimation=decimation,
-            actions=self.actions,
-            observations=self.observations,
-            events=self.events,
-            rewards=self.rewards,
-            terminations=self.terminations,
-            commands=self.commands,
             episode_length_s=episode_length_s,
-            sensors=self.sensors,
             spec=self.scene,
+            sensors=self.sensors,
+            **self.extras,
         )
 
         return env_cfg
@@ -126,7 +114,9 @@ class TrainingSpec:
 
 class NflEnvMixin(ManagerBasedRLEnv):
     def __init__(self, cfg: TaskEnvCfg, **kwargs: Any):
-        factory = cfg.spec.create_instance(cfg.scene.num_envs, cfg.scene.env_spacing)
+        factory = cfg.spec.create_instance(
+            cfg.scene.num_envs, cfg.scene.env_spacing
+        )
         for name, sensor in cfg.sensors.items():
             factory.add_sensor(name, sensor)
         cfg.scene = factory.get_scene(cfg.scene.robot)
